@@ -1,0 +1,196 @@
+[0.000000] (-) TimerEvent: {}
+[0.000174] (-) JobUnselected: {'identifier': 'mid360_driver'}
+[0.000695] (-) JobUnselected: {'identifier': 'mppi_planner'}
+[0.001004] (-) JobUnselected: {'identifier': 'pure_pursuit_planner'}
+[0.001144] (mcl_3d) JobQueued: {'identifier': 'mcl_3d', 'dependencies': OrderedDict()}
+[0.001188] (mcl_3d) JobStarted: {'identifier': 'mcl_3d'}
+[0.011416] (mcl_3d) JobProgress: {'identifier': 'mcl_3d', 'progress': 'cmake'}
+[0.012234] (mcl_3d) Command: {'cmd': ['/usr/bin/cmake', '/home/yoshida/study/ros2/src/localization/mcl_3d', '-DCMAKE_INSTALL_PREFIX=/home/yoshida/study/ros2/install/mcl_3d'], 'cwd': '/home/yoshida/study/ros2/build/mcl_3d', 'env': OrderedDict({'LESSOPEN': '| /usr/bin/lesspipe %s', 'VSCODE_CWD': '/home/yoshida/study/ros2', 'VSCODE_ESM_ENTRYPOINT': 'vs/workbench/api/node/extensionHostProcess', 'AI_AGENT': 'claude-code_2-1-167_agent', 'LANGUAGE': 'ja:en', 'USER': 'yoshida', 'CLAUDE_CODE_ENTRYPOINT': 'claude-vscode', 'LC_TIME': 'C.UTF-8', 'VSCODE_NLS_CONFIG': '{"userLocale":"ja","osLocale":"ja","resolvedLanguage":"ja","defaultMessagesFile":"/usr/share/code/resources/app/out/nls.messages.json","languagePack":{"translationsConfigFile":"/home/yoshida/.config/Code/clp/37bade084f33e17c2866b890476d2e9e.ja/tcf.json","messagesFile":"/home/yoshida/.config/Code/clp/37bade084f33e17c2866b890476d2e9e.ja/618725e67565b290ba4da6fe2d29f8fa1d4e3622/nls.messages.json","corruptMarkerFile":"/home/yoshida/.config/Code/clp/37bade084f33e17c2866b890476d2e9e.ja/corrupted.info"},"locale":"ja","availableLanguages":{"*":"ja"},"_languagePackId":"37bade084f33e17c2866b890476d2e9e.ja","_languagePackSupport":true,"_translationsConfigFile":"/home/yoshida/.config/Code/clp/37bade084f33e17c2866b890476d2e9e.ja/tcf.json","_cacheRoot":"/home/yoshida/.config/Code/clp/37bade084f33e17c2866b890476d2e9e.ja","_resolvedLanguagePackCoreLocation":"/home/yoshida/.config/Code/clp/37bade084f33e17c2866b890476d2e9e.ja/618725e67565b290ba4da6fe2d29f8fa1d4e3622","_corruptedFile":"/home/yoshida/.config/Code/clp/37bade084f33e17c2866b890476d2e9e.ja/corrupted.info"}', 'GIT_EDITOR': 'true', 'VSCODE_HANDLES_UNCAUGHT_ERRORS': 'true', 'XDG_SESSION_TYPE': 'x11', 'STM32CubeMX_PATH': '/home/yoshida/STM32CubeMX', 'CLAUDE_AGENT_SDK_VERSION': '0.3.167', 'CLUTTER_DISABLE_MIPMAPPED_TEXT': '1', 'SHLVL': '2', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/yoshida', 'CHROME_DESKTOP': 'code.desktop', 'DESKTOP_SESSION': 'ubuntu', 'NVM_BIN': '/home/yoshida/.nvm/versions/node/v22.17.0/bin', 'NVM_INC': '/home/yoshida/.nvm/versions/node/v22.17.0/include/node', 'VSCODE_IPC_HOOK': '/run/user/1000/vscode-b18392ea-1.10-main.sock', 'APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL': '1', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'SDL_IM_MODULE': 'fcitx', 'LC_MONETARY': 'C.UTF-8', 'SYSTEMD_EXEC_PID': '5123', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'NVM_DIR': '/home/yoshida/.nvm', 'VSCODE_CRASH_REPORTER_PROCESS_TYPE': 'extensionHost', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'VSCODE_L10N_BUNDLE_LOCATION': 'file:///home/yoshida/.vscode/extensions/ms-ceintl.vscode-language-pack-ja-1.123.2026060618/translations/extensions/vscode.json-language-features.i18n.json', 'APPLICATION_INSIGHTS_NO_STATSBEAT': 'true', 'ROS_DISTRO': 'jazzy', 'GTK_IM_MODULE': 'fcitx', 'LOGNAME': 'yoshida', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@x11.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'APPLICATIONINSIGHTS_CONFIGURATION_CONTENT': '{}', 'USERNAME': 'yoshida', 'TERM': 'xterm-256color', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'FC_FONTATIONS': '1', 'WINDOWPATH': '2', 'MCP_CONNECTION_NONBLOCKING': 'true', 'PATH': '/home/yoshida/.local/bin:/home/yoshida/.local/bin:/home/yoshida/.platformio/penv/bin:/home/yoshida/.vscode/extensions/stmicroelectronics.stm32cube-ide-build-cmake-1.45.0-linux-x64/resources/cube-cmake/linux/x86_64:/home/yoshida/.vscode/extensions/stmicroelectronics.stm32cube-ide-core-1.3.0-linux-x64/resources/binaries/linux/x86_64:/home/yoshida/.local/bin:/home/yoshida/.platformio/penv/bin:/opt/ros/jazzy/bin:/home/yoshida/.nvm/versions/node/v22.17.0/bin:/home/yoshida/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/yoshida/.dotnet/tools:/home/yoshida/.dotnet/tools:/home/yoshida/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin', 'SESSION_MANAGER': 'local/yoshida-dynabook-XZ-HYL:@/tmp/.ICE-unix/5067,unix/yoshida-dynabook-XZ-HYL:/tmp/.ICE-unix/5067', 'ANTHROPIC_API_KEY': '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', 'PYTHON_EXECUTABLE': '/usr/bin/python3.12', 'PAPERSIZE': 'a4', 'COREPACK_ENABLE_AUTO_PIN': '0', 'XDG_MENU_PREFIX': 'gnome-', 'LC_ADDRESS': 'C.UTF-8', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/b7138684_55bf_499f_9b58_393b16343ef0', 'XDG_RUNTIME_DIR': '/run/user/1000', 'GDK_BACKEND': 'x11', 'CLAUDE_EFFORT': 'high', 'DISPLAY': ':1', 'HISTSIZE': '10000', 'NoDefaultCurrentDirectoryInExePath': '1', 'LANG': 'ja_JP.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'DOTNET_BUNDLE_EXTRACT_BASE_DIR': '/home/yoshida/.cache/dotnet_bundle_extract', 'LC_TELEPHONE': 'C.UTF-8', 'XMODIFIERS': '@im=fcitx', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/gdm/Xauthority', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'GNOME_TERMINAL_SERVICE': ':1.195', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'GITLAB_NUGET_USERNAME': 'k-yoshida', 'SHELL': '/bin/bash', 'LC_NAME': 'C.UTF-8', 'VSCODE_DOTNET_INSTALL_TOOL_ORIGINAL_HOME': '/home/yoshida', 'QT_ACCESSIBILITY': '1', 'ELECTRON_RUN_AS_NODE': '1', 'NO_AT_BRIDGE': '1', 'GDMSESSION': 'ubuntu', 'CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING': 'true', 'CLAUDE_CODE_SESSION_ID': '1405ee9d-582d-4d4f-859a-7c7cbb6dd3e3', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'CUBE_BUNDLE_PATH': '/home/yoshida/.local/share/stm32cube/bundles', 'CLAUDECODE': '1', 'LC_MEASUREMENT': 'C.UTF-8', 'GPG_AGENT_INFO': '/run/user/1000/gnupg/S.gpg-agent:0:1', 'LC_IDENTIFICATION': 'C.UTF-8', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'QT_IM_MODULE': 'fcitx', 'PWD': '/home/yoshida/study/ros2/build/mcl_3d', 'VSCODE_CLI': '1', 'CMSIS_PACK_ROOT': '/home/yoshida/.local/share/stm32cube/packs', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'VSCODE_CODE_CACHE_PATH': '/home/yoshida/.config/Code/CachedData/618725e67565b290ba4da6fe2d29f8fa1d4e3622', 'CLUTTER_IM_MODULE': 'xim', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/home/yoshida/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'CLAUDE_CODE_EXECPATH': '/home/yoshida/.vscode/extensions/anthropic.claude-code-2.1.167-linux-x64/resources/native-binary/claude', 'PYTHONPATH': '/opt/ros/jazzy/lib/python3.12/site-packages', 'HISTFILESIZA': '10000', 'LC_NUMERIC': 'C.UTF-8', 'CLAUDE_CODE_ENABLE_TASKS': '0', 'LC_PAPER': 'C.UTF-8', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'Python3_EXECUTABLE': '/usr/bin/python3.12', 'VTE_VERSION': '7600', 'GITLAB_NUGET_TOKEN': 'glpat-yrPkqpheVasHLiCpdhaq', 'ELECTRON_NO_ATTACH_CONSOLE': '1', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor::/home/yoshida/local/:/opt/ros/jazzy', 'VSCODE_PID': '208378'}), 'shell': False}
+[0.099639] (-) TimerEvent: {}
+[0.181942] (mcl_3d) StdoutLine: {'line': b'-- The C compiler identification is GNU 13.3.0\n'}
+[0.199770] (-) TimerEvent: {}
+[0.300014] (-) TimerEvent: {}
+[0.327423] (mcl_3d) StdoutLine: {'line': b'-- The CXX compiler identification is GNU 13.3.0\n'}
+[0.358882] (mcl_3d) StdoutLine: {'line': b'-- Detecting C compiler ABI info\n'}
+[0.400124] (-) TimerEvent: {}
+[0.482396] (mcl_3d) StdoutLine: {'line': b'-- Detecting C compiler ABI info - done\n'}
+[0.491688] (mcl_3d) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc - skipped\n'}
+[0.492064] (mcl_3d) StdoutLine: {'line': b'-- Detecting C compile features\n'}
+[0.492844] (mcl_3d) StdoutLine: {'line': b'-- Detecting C compile features - done\n'}
+[0.500242] (-) TimerEvent: {}
+[0.507474] (mcl_3d) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info\n'}
+[0.600355] (-) TimerEvent: {}
+[0.638513] (mcl_3d) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info - done\n'}
+[0.652818] (mcl_3d) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++ - skipped\n'}
+[0.653144] (mcl_3d) StdoutLine: {'line': b'-- Detecting CXX compile features\n'}
+[0.653953] (mcl_3d) StdoutLine: {'line': b'-- Detecting CXX compile features - done\n'}
+[0.665841] (mcl_3d) StdoutLine: {'line': b'-- Found ament_cmake: 2.5.5 (/opt/ros/jazzy/share/ament_cmake/cmake)\n'}
+[0.700471] (-) TimerEvent: {}
+[0.800683] (-) TimerEvent: {}
+[0.877427] (mcl_3d) StdoutLine: {'line': b'-- Found Python3: /home/yoshida/.local/bin/python3.13 (found version "3.13.9") found components: Interpreter \n'}
+[0.900803] (-) TimerEvent: {}
+[1.001003] (-) TimerEvent: {}
+[1.029338] (mcl_3d) StdoutLine: {'line': b'-- Found rclcpp: 28.1.16 (/opt/ros/jazzy/share/rclcpp/cmake)\n'}
+[1.101142] (-) TimerEvent: {}
+[1.110975] (mcl_3d) StdoutLine: {'line': b'-- Found rosidl_generator_c: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)\n'}
+[1.130742] (mcl_3d) StdoutLine: {'line': b'-- Found rosidl_generator_cpp: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)\n'}
+[1.161906] (mcl_3d) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[1.186184] (mcl_3d) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[1.201265] (-) TimerEvent: {}
+[1.301482] (-) TimerEvent: {}
+[1.319162] (mcl_3d) StdoutLine: {'line': b'-- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)\n'}
+[1.324694] (mcl_3d) StdoutLine: {'line': b'-- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)\n'}
+[1.401606] (-) TimerEvent: {}
+[1.465277] (mcl_3d) StdoutLine: {'line': b'-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")  \n'}
+[1.495674] (mcl_3d) StdoutLine: {'line': b'-- Found FastRTPS: /opt/ros/jazzy/include (Required is at least version "2.13") \n'}
+[1.501722] (-) TimerEvent: {}
+[1.530301] (mcl_3d) StdoutLine: {'line': b"-- Using RMW implementation 'rmw_fastrtps_cpp' as default\n"}
+[1.601825] (-) TimerEvent: {}
+[1.660267] (mcl_3d) StdoutLine: {'line': b'-- Found sensor_msgs: 5.3.6 (/opt/ros/jazzy/share/sensor_msgs/cmake)\n'}
+[1.701999] (-) TimerEvent: {}
+[1.781035] (mcl_3d) StdoutLine: {'line': b'-- Found pcl_conversions: 2.6.2 (/opt/ros/jazzy/share/pcl_conversions/cmake)\n'}
+[1.802092] (-) TimerEvent: {}
+[1.889480] (mcl_3d) StderrLine: {'line': b'CMake Warning (dev) at /usr/lib/x86_64-linux-gnu/cmake/pcl/Modules/FindFLANN.cmake:45 (find_package):\n'}
+[1.889740] (mcl_3d) StderrLine: {'line': b'  Policy CMP0144 is not set: find_package uses upper-case <PACKAGENAME>_ROOT\n'}
+[1.889843] (mcl_3d) StderrLine: {'line': b'  variables.  Run "cmake --help-policy CMP0144" for policy details.  Use the\n'}
+[1.889930] (mcl_3d) StderrLine: {'line': b'  cmake_policy command to set the policy and suppress this warning.\n'}
+[1.890005] (mcl_3d) StderrLine: {'line': b'\n'}
+[1.890087] (mcl_3d) StderrLine: {'line': b'  CMake variable FLANN_ROOT is set to:\n'}
+[1.890184] (mcl_3d) StderrLine: {'line': b'\n'}
+[1.890261] (mcl_3d) StderrLine: {'line': b'    /usr\n'}
+[1.890336] (mcl_3d) StderrLine: {'line': b'\n'}
+[1.890411] (mcl_3d) StderrLine: {'line': b'  For compatibility, find_package is ignoring the variable, but code in a\n'}
+[1.890484] (mcl_3d) StderrLine: {'line': b'  .cmake module might still use it.\n'}
+[1.890553] (mcl_3d) StderrLine: {'line': b'Call Stack (most recent call first):\n'}
+[1.890624] (mcl_3d) StderrLine: {'line': b'  /usr/lib/x86_64-linux-gnu/cmake/pcl/PCLConfig.cmake:261 (find_package)\n'}
+[1.890694] (mcl_3d) StderrLine: {'line': b'  /usr/lib/x86_64-linux-gnu/cmake/pcl/PCLConfig.cmake:306 (find_flann)\n'}
+[1.890767] (mcl_3d) StderrLine: {'line': b'  /usr/lib/x86_64-linux-gnu/cmake/pcl/PCLConfig.cmake:570 (find_external_library)\n'}
+[1.890840] (mcl_3d) StderrLine: {'line': b'  /opt/ros/jazzy/share/pcl_conversions/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)\n'}
+[1.890913] (mcl_3d) StderrLine: {'line': b'  /opt/ros/jazzy/share/pcl_conversions/cmake/pcl_conversionsConfig.cmake:41 (include)\n'}
+[1.890995] (mcl_3d) StderrLine: {'line': b'  CMakeLists.txt:15 (find_package)\n'}
+[1.891249] (mcl_3d) StderrLine: {'line': b'This warning is for project developers.  Use -Wno-dev to suppress it.\n'}
+[1.891448] (mcl_3d) StderrLine: {'line': b'\n'}
+[1.891569] (mcl_3d) StdoutLine: {'line': b'-- Found flann version 1.9.2\n'}
+[1.902184] (-) TimerEvent: {}
+[2.002408] (-) TimerEvent: {}
+[2.102632] (-) TimerEvent: {}
+[2.202845] (-) TimerEvent: {}
+[2.260002] (mcl_3d) StdoutLine: {'line': b'-- Found OpenMP_CXX: -fopenmp (found version "4.5") \n'}
+[2.260529] (mcl_3d) StdoutLine: {'line': b'-- Found OpenMP: TRUE (found version "4.5") found components: CXX \n'}
+[2.302994] (-) TimerEvent: {}
+[2.403272] (-) TimerEvent: {}
+[2.503549] (-) TimerEvent: {}
+[2.603779] (-) TimerEvent: {}
+[2.704034] (-) TimerEvent: {}
+[2.804310] (-) TimerEvent: {}
+[2.904551] (-) TimerEvent: {}
+[3.004820] (-) TimerEvent: {}
+[3.105118] (-) TimerEvent: {}
+[3.205380] (-) TimerEvent: {}
+[3.305634] (-) TimerEvent: {}
+[3.405929] (-) TimerEvent: {}
+[3.506191] (-) TimerEvent: {}
+[3.606386] (-) TimerEvent: {}
+[3.706602] (-) TimerEvent: {}
+[3.810190] (-) TimerEvent: {}
+[3.910416] (-) TimerEvent: {}
+[4.010633] (-) TimerEvent: {}
+[4.109012] (mcl_3d) StdoutLine: {'line': b"-- Checking for module 'libusb-1.0'\n"}
+[4.110744] (-) TimerEvent: {}
+[4.130886] (mcl_3d) StdoutLine: {'line': b'--   Found libusb-1.0, version 1.0.27\n'}
+[4.179410] (mcl_3d) StdoutLine: {'line': b'-- Found libusb: /usr/lib/x86_64-linux-gnu/libusb-1.0.so  \n'}
+[4.182551] (mcl_3d) StdoutLine: {'line': b'-- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)\n'}
+[4.210893] (-) TimerEvent: {}
+[4.263469] (mcl_3d) StdoutLine: {'line': b'-- OpenNI2 found (version: 2.2.0.33, include: /usr/include/openni2, lib: /usr/lib/x86_64-linux-gnu/libOpenNI2.so;libusb::libusb)\n'}
+[4.267330] (mcl_3d) StdoutLine: {'line': b'-- Could NOT find Pcap (missing: PCAP_LIBRARIES PCAP_INCLUDE_DIRS) \n'}
+[4.282524] (mcl_3d) StdoutLine: {'line': b'-- Found ZLIB: /usr/lib/x86_64-linux-gnu/libz.so (found version "1.3")  \n'}
+[4.302623] (mcl_3d) StdoutLine: {'line': b'-- Found PNG: /usr/lib/x86_64-linux-gnu/libpng.so (found version "1.6.43") \n'}
+[4.310977] (-) TimerEvent: {}
+[4.411262] (-) TimerEvent: {}
+[4.511478] (-) TimerEvent: {}
+[4.611722] (-) TimerEvent: {}
+[4.711990] (-) TimerEvent: {}
+[4.811638] (mcl_3d) StdoutLine: {'line': b'-- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)\n'}
+[4.812043] (-) TimerEvent: {}
+[4.822580] (mcl_3d) StdoutLine: {'line': b'-- OpenNI2 found (version: 2.2.0.33, include: /usr/include/openni2, lib: /usr/lib/x86_64-linux-gnu/libOpenNI2.so;libusb::libusb)\n'}
+[4.912182] (-) TimerEvent: {}
+[5.012410] (-) TimerEvent: {}
+[5.112631] (-) TimerEvent: {}
+[5.212858] (-) TimerEvent: {}
+[5.313088] (-) TimerEvent: {}
+[5.413351] (-) TimerEvent: {}
+[5.513583] (-) TimerEvent: {}
+[5.531196] (mcl_3d) StdoutLine: {'line': b'-- Found Qhull version 8.0.2\n'}
+[5.613881] (-) TimerEvent: {}
+[5.714496] (-) TimerEvent: {}
+[5.814825] (-) TimerEvent: {}
+[5.915125] (-) TimerEvent: {}
+[6.015346] (-) TimerEvent: {}
+[6.115577] (-) TimerEvent: {}
+[6.215856] (-) TimerEvent: {}
+[6.252465] (mcl_3d) StdoutLine: {'line': b'-- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)\n'}
+[6.316016] (-) TimerEvent: {}
+[6.416222] (-) TimerEvent: {}
+[6.516436] (-) TimerEvent: {}
+[6.616665] (-) TimerEvent: {}
+[6.717082] (-) TimerEvent: {}
+[6.762819] (mcl_3d) StdoutLine: {'line': b'-- Found PCL_COMMON: /usr/lib/x86_64-linux-gnu/libpcl_common.so  \n'}
+[6.764207] (mcl_3d) StdoutLine: {'line': b'-- Found PCL_KDTREE: /usr/lib/x86_64-linux-gnu/libpcl_kdtree.so  \n'}
+[6.765501] (mcl_3d) StdoutLine: {'line': b'-- Found PCL_OCTREE: /usr/lib/x86_64-linux-gnu/libpcl_octree.so  \n'}
+[6.767068] (mcl_3d) StdoutLine: {'line': b'-- Found PCL_SEARCH: /usr/lib/x86_64-linux-gnu/libpcl_search.so  \n'}
+[6.768662] (mcl_3d) StdoutLine: {'line': b'-- Found PCL_SAMPLE_CONSENSUS: /usr/lib/x86_64-linux-gnu/libpcl_sample_consensus.so  \n'}
+[6.769983] (mcl_3d) StdoutLine: {'line': b'-- Found PCL_FILTERS: /usr/lib/x86_64-linux-gnu/libpcl_filters.so  \n'}
+[6.770565] (mcl_3d) StdoutLine: {'line': b'-- Found PCL_2D: /usr/include/pcl-1.14  \n'}
+[6.771147] (mcl_3d) StdoutLine: {'line': b'-- Found PCL_GEOMETRY: /usr/include/pcl-1.14  \n'}
+[6.772941] (mcl_3d) StdoutLine: {'line': b'-- Found PCL_IO: /usr/lib/x86_64-linux-gnu/libpcl_io.so  \n'}
+[6.774455] (mcl_3d) StdoutLine: {'line': b'-- Found PCL_FEATURES: /usr/lib/x86_64-linux-gnu/libpcl_features.so  \n'}
+[6.775947] (mcl_3d) StdoutLine: {'line': b'-- Found PCL_ML: /usr/lib/x86_64-linux-gnu/libpcl_ml.so  \n'}
+[6.777222] (mcl_3d) StdoutLine: {'line': b'-- Found PCL_SEGMENTATION: /usr/lib/x86_64-linux-gnu/libpcl_segmentation.so  \n'}
+[6.778756] (mcl_3d) StdoutLine: {'line': b'-- Found PCL_VISUALIZATION: /usr/lib/x86_64-linux-gnu/libpcl_visualization.so  \n'}
+[6.780175] (mcl_3d) StdoutLine: {'line': b'-- Found PCL_SURFACE: /usr/lib/x86_64-linux-gnu/libpcl_surface.so  \n'}
+[6.781548] (mcl_3d) StdoutLine: {'line': b'-- Found PCL_REGISTRATION: /usr/lib/x86_64-linux-gnu/libpcl_registration.so  \n'}
+[6.783165] (mcl_3d) StdoutLine: {'line': b'-- Found PCL_KEYPOINTS: /usr/lib/x86_64-linux-gnu/libpcl_keypoints.so  \n'}
+[6.784634] (mcl_3d) StdoutLine: {'line': b'-- Found PCL_TRACKING: /usr/lib/x86_64-linux-gnu/libpcl_tracking.so  \n'}
+[6.786058] (mcl_3d) StdoutLine: {'line': b'-- Found PCL_RECOGNITION: /usr/lib/x86_64-linux-gnu/libpcl_recognition.so  \n'}
+[6.787452] (mcl_3d) StdoutLine: {'line': b'-- Found PCL_STEREO: /usr/lib/x86_64-linux-gnu/libpcl_stereo.so  \n'}
+[6.789289] (mcl_3d) StdoutLine: {'line': b'-- Found PCL_APPS: /usr/lib/x86_64-linux-gnu/libpcl_apps.so  \n'}
+[6.790820] (mcl_3d) StdoutLine: {'line': b'-- Found PCL_IN_HAND_SCANNER: /usr/include/pcl-1.14  \n'}
+[6.791264] (mcl_3d) StdoutLine: {'line': b'-- Found PCL_MODELER: /usr/include/pcl-1.14  \n'}
+[6.793289] (mcl_3d) StdoutLine: {'line': b'-- Found PCL_POINT_CLOUD_EDITOR: /usr/include/pcl-1.14  \n'}
+[6.794744] (mcl_3d) StdoutLine: {'line': b'-- Found PCL_OUTOFCORE: /usr/lib/x86_64-linux-gnu/libpcl_outofcore.so  \n'}
+[6.796252] (mcl_3d) StdoutLine: {'line': b'-- Found PCL_PEOPLE: /usr/lib/x86_64-linux-gnu/libpcl_people.so  \n'}
+[6.798824] (mcl_3d) StderrLine: {'line': b'CMake Warning (dev) at CMakeLists.txt:16 (find_package):\n'}
+[6.799086] (mcl_3d) StderrLine: {'line': b'  Policy CMP0074 is not set: find_package uses <PackageName>_ROOT variables.\n'}
+[6.799236] (mcl_3d) StderrLine: {'line': b'  Run "cmake --help-policy CMP0074" for policy details.  Use the cmake_policy\n'}
+[6.799369] (mcl_3d) StderrLine: {'line': b'  command to set the policy and suppress this warning.\n'}
+[6.799504] (mcl_3d) StderrLine: {'line': b'\n'}
+[6.799634] (mcl_3d) StderrLine: {'line': b'  CMake variable PCL_ROOT is set to:\n'}
+[6.799761] (mcl_3d) StderrLine: {'line': b'\n'}
+[6.799906] (mcl_3d) StderrLine: {'line': b'    /usr\n'}
+[6.800046] (mcl_3d) StderrLine: {'line': b'\n'}
+[6.800210] (mcl_3d) StderrLine: {'line': b'  For compatibility, CMake is ignoring the variable.\n'}
+[6.800354] (mcl_3d) StderrLine: {'line': b'This warning is for project developers.  Use -Wno-dev to suppress it.\n'}
+[6.800505] (mcl_3d) StderrLine: {'line': b'\n'}
+[6.817182] (-) TimerEvent: {}
+[6.824819] (mcl_3d) StdoutLine: {'line': b'-- Found ament_lint_auto: 0.17.4 (/opt/ros/jazzy/share/ament_lint_auto/cmake)\n'}
+[6.860631] (mcl_3d) StderrLine: {'line': b'Traceback (most recent call last):\n'}
+[6.863241] (mcl_3d) StderrLine: {'line': b'  File "/opt/ros/jazzy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 22, in <module>\n'}
+[6.863423] (mcl_3d) StderrLine: {'line': b'    from catkin_pkg.package import parse_package_string\n'}
+[6.863551] (mcl_3d) StderrLine: {'line': b"ModuleNotFoundError: No module named 'catkin_pkg'\n"}
+[6.868706] (mcl_3d) StderrLine: {'line': b'CMake Error at /opt/ros/jazzy/share/ament_cmake_core/cmake/core/ament_package_xml.cmake:95 (message):\n'}
+[6.869084] (mcl_3d) StderrLine: {'line': b'  execute_process(/home/yoshida/.local/bin/python3.13\n'}
+[6.869298] (mcl_3d) StderrLine: {'line': b'  /opt/ros/jazzy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py\n'}
+[6.869373] (mcl_3d) StderrLine: {'line': b'  /home/yoshida/study/ros2/src/localization/mcl_3d/package.xml\n'}
+[6.869430] (mcl_3d) StderrLine: {'line': b'  /home/yoshida/study/ros2/build/mcl_3d/ament_cmake_core/package.cmake)\n'}
+[6.869480] (mcl_3d) StderrLine: {'line': b'  returned error code 1\n'}
+[6.869525] (mcl_3d) StderrLine: {'line': b'Call Stack (most recent call first):\n'}
+[6.869567] (mcl_3d) StderrLine: {'line': b'  /opt/ros/jazzy/share/ament_cmake_core/cmake/core/ament_package_xml.cmake:49 (_ament_package_xml)\n'}
+[6.869611] (mcl_3d) StderrLine: {'line': b'  /opt/ros/jazzy/share/ament_lint_auto/cmake/ament_lint_auto_find_test_dependencies.cmake:31 (ament_package_xml)\n'}
+[6.869654] (mcl_3d) StderrLine: {'line': b'  CMakeLists.txt:52 (ament_lint_auto_find_test_dependencies)\n'}
+[6.869705] (mcl_3d) StderrLine: {'line': b'\n'}
+[6.869748] (mcl_3d) StderrLine: {'line': b'\n'}
+[6.869790] (mcl_3d) StdoutLine: {'line': b'-- Configuring incomplete, errors occurred!\n'}
+[6.894611] (mcl_3d) CommandEnded: {'returncode': 1}
+[6.917280] (-) TimerEvent: {}
+[6.927201] (mcl_3d) JobEnded: {'identifier': 'mcl_3d', 'rc': 1}
+[6.937751] (-) EventReactorShutdown: {}

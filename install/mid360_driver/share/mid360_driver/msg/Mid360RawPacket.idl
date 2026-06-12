@@ -1,0 +1,29 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from mid360_driver/msg/Mid360RawPacket.msg
+// generated code does not contain a copyright notice
+
+
+module mid360_driver {
+  module msg {
+    typedef uint8 uint8__8[8];
+    @verbatim (language="comment", text=
+      "One Livox MID-360 point-cloud UDP payload (compact raw form for rosbag recording)")
+    struct Mid360RawPacket {
+      uint8 data_type;
+
+      uint16 dot_num;
+
+      uint16 time_interval;
+
+      uint16 udp_cnt;
+
+      uint8 frame_cnt;
+
+      uint8 time_type;
+
+      uint8__8 livox_timestamp;
+
+      sequence<uint8> data;
+    };
+  };
+};

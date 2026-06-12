@@ -1,0 +1,209 @@
+[0.014s] Invoking command in '/home/yoshida/study/ros2/build/mid360_driver': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/yoshida/study/ros2/src/mid360_driver -DCMAKE_INSTALL_PREFIX=/home/yoshida/study/ros2/install/mid360_driver
+[0.030s] -- Found ament_cmake: 2.5.5 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.069s] -- Found Python3: /usr/bin/python3.12 (found version "3.12.3") found components: Interpreter 
+[0.195s] -- Found rclcpp: 28.1.16 (/opt/ros/jazzy/share/rclcpp/cmake)
+[0.256s] -- Found rosidl_generator_c: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[0.267s] -- Found rosidl_generator_cpp: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[0.281s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.297s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.375s] -- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[0.377s] -- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+[0.510s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.593s] -- Found std_msgs: 5.3.6 (/opt/ros/jazzy/share/std_msgs/cmake)
+[0.610s] -- Found sensor_msgs: 5.3.6 (/opt/ros/jazzy/share/sensor_msgs/cmake)
+[0.659s] -- Found rosidl_default_generators: 1.6.0 (/opt/ros/jazzy/share/rosidl_default_generators/cmake)
+[0.669s] -- Found rosidl_adapter: 4.6.7 (/opt/ros/jazzy/share/rosidl_adapter/cmake)
+[1.121s] -- Found ament_cmake_ros: 0.12.0 (/opt/ros/jazzy/share/ament_cmake_ros/cmake)
+[1.462s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[1.588s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[1.590s] -- Found python_cmake_module: 0.11.1 (/opt/ros/jazzy/share/python_cmake_module/cmake)
+[1.990s] -- Found Python3: /usr/bin/python3.12 (found version "3.12.3") found components: Interpreter Development NumPy Development.Module Development.Embed 
+[2.019s] -- Found ament_lint_auto: 0.17.4 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[2.029s] -- Added test 'cppcheck' to perform static code analysis on C / C++ code
+[2.029s] -- Configured cppcheck include dirs: /home/yoshida/study/ros2/src/mid360_driver/include
+[2.030s] -- Configured cppcheck exclude dirs and/or files: 
+[2.030s] -- Added test 'lint_cmake' to check CMake code style
+[2.032s] -- Added test 'uncrustify' to check C / C++ code style
+[2.032s] -- Configured uncrustify additional arguments: 
+[2.032s] -- Added test 'xmllint' to check XML markup files
+[2.034s] -- Configuring done (2.0s)
+[2.085s] -- Generating done (0.0s)
+[2.101s] -- Build files have been written to: /home/yoshida/study/ros2/build/mid360_driver
+[2.115s] Invoked command in '/home/yoshida/study/ros2/build/mid360_driver' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/yoshida/study/ros2/src/mid360_driver -DCMAKE_INSTALL_PREFIX=/home/yoshida/study/ros2/install/mid360_driver
+[2.117s] Invoking command in '/home/yoshida/study/ros2/build/mid360_driver': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/yoshida/study/ros2/build/mid360_driver -- -j16 -l16
+[2.198s] [  1%] Built target mid360_driver__rosidl_generator_type_description
+[2.217s] [  1%] Built target ament_cmake_python_copy_mid360_driver
+[2.229s] [  3%] Built target mid360_driver__cpp
+[2.247s] [ 19%] Built target mid360_driver__rosidl_generator_c
+[2.274s] [ 26%] Built target mid360_driver__rosidl_typesupport_fastrtps_cpp
+[2.274s] [ 34%] Built target mid360_driver__rosidl_typesupport_fastrtps_c
+[2.285s] [ 50%] Built target mid360_driver__rosidl_typesupport_introspection_c
+[2.285s] [ 50%] Built target mid360_driver__rosidl_typesupport_introspection_cpp
+[2.291s] [ 57%] Built target mid360_driver__rosidl_typesupport_c
+[2.293s] [ 65%] Built target mid360_driver__rosidl_typesupport_cpp
+[2.332s] [ 65%] Built target mid360_driver
+[2.346s] [ 80%] Built target mid360_driver_node
+[2.376s] [ 82%] Built target mid360_driver__py
+[2.420s] [ 88%] Built target mid360_driver__rosidl_generator_py
+[2.468s] [ 92%] Built target mid360_driver_s__rosidl_typesupport_fastrtps_c
+[2.468s] [100%] Built target mid360_driver_s__rosidl_typesupport_introspection_c
+[2.468s] [100%] Built target mid360_driver_s__rosidl_typesupport_c
+[2.571s] running egg_info
+[2.600s] writing mid360_driver.egg-info/PKG-INFO
+[2.600s] writing dependency_links to mid360_driver.egg-info/dependency_links.txt
+[2.600s] writing top-level names to mid360_driver.egg-info/top_level.txt
+[2.681s] reading manifest file 'mid360_driver.egg-info/SOURCES.txt'
+[2.682s] writing manifest file 'mid360_driver.egg-info/SOURCES.txt'
+[2.724s] [100%] Built target ament_cmake_python_build_mid360_driver_egg
+[2.747s] Invoked command in '/home/yoshida/study/ros2/build/mid360_driver' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/yoshida/study/ros2/build/mid360_driver -- -j16 -l16
+[2.764s] Invoking command in '/home/yoshida/study/ros2/build/mid360_driver': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/yoshida/study/ros2/build/mid360_driver
+[2.782s] -- Install configuration: ""
+[2.783s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/ament_index/resource_index/rosidl_interfaces/mid360_driver
+[2.783s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/msg/CustomPoint.json
+[2.783s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/msg/CustomMsg.json
+[2.783s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver
+[2.783s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg
+[2.783s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail
+[2.784s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_point__type_support.h
+[2.784s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_msg__description.c
+[2.784s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_point__type_support.c
+[2.784s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_msg__functions.c
+[2.784s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_point__functions.c
+[2.784s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_msg__type_support.c
+[2.784s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_msg__type_support.h
+[2.785s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_msg__functions.h
+[2.785s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_msg__struct.h
+[2.785s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_point__struct.h
+[2.785s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_point__description.c
+[2.785s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_point__functions.h
+[2.785s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/rosidl_generator_c__visibility_control.h
+[2.786s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/custom_point.h
+[2.786s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/custom_msg.h
+[2.786s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/environment/library_path.sh
+[2.786s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/environment/library_path.dsv
+[2.786s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/libmid360_driver__rosidl_generator_c.so
+[2.786s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver
+[2.787s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg
+[2.787s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail
+[2.787s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_msg__rosidl_typesupport_fastrtps_c.h
+[2.787s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_point__rosidl_typesupport_fastrtps_c.h
+[2.787s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+[2.787s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/libmid360_driver__rosidl_typesupport_fastrtps_c.so
+[2.787s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver
+[2.788s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg
+[2.788s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/custom_point.hpp
+[2.788s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail
+[2.788s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_point__struct.hpp
+[2.788s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_msg__type_support.hpp
+[2.788s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_point__type_support.hpp
+[2.788s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_point__traits.hpp
+[2.788s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_msg__traits.hpp
+[2.788s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_msg__struct.hpp
+[2.789s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_msg__builder.hpp
+[2.789s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_point__builder.hpp
+[2.789s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/rosidl_generator_cpp__visibility_control.hpp
+[2.789s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/custom_msg.hpp
+[2.789s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver
+[2.789s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg
+[2.789s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail
+[2.789s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_msg__rosidl_typesupport_fastrtps_cpp.hpp
+[2.789s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/dds_fastrtps
+[2.789s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_point__rosidl_typesupport_fastrtps_cpp.hpp
+[2.789s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+[2.789s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/libmid360_driver__rosidl_typesupport_fastrtps_cpp.so
+[2.790s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver
+[2.790s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg
+[2.790s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail
+[2.790s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_point__rosidl_typesupport_introspection_c.h
+[2.790s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_point__type_support.c
+[2.790s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_msg__type_support.c
+[2.790s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_msg__rosidl_typesupport_introspection_c.h
+[2.790s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[2.790s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/libmid360_driver__rosidl_typesupport_introspection_c.so
+[2.790s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/libmid360_driver__rosidl_typesupport_c.so
+[2.790s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver
+[2.791s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg
+[2.791s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail
+[2.791s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_msg__rosidl_typesupport_introspection_cpp.hpp
+[2.791s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_point__type_support.cpp
+[2.791s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_msg__type_support.cpp
+[2.791s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/include/mid360_driver/mid360_driver/msg/detail/custom_point__rosidl_typesupport_introspection_cpp.hpp
+[2.792s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/libmid360_driver__rosidl_typesupport_introspection_cpp.so
+[2.792s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/libmid360_driver__rosidl_typesupport_cpp.so
+[2.792s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/environment/pythonpath.sh
+[2.792s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/environment/pythonpath.dsv
+[2.792s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/python3.12/site-packages/mid360_driver-0.1.0-py3.12.egg-info
+[2.792s] -- Installing: /home/yoshida/study/ros2/install/mid360_driver/lib/python3.12/site-packages/mid360_driver-0.1.0-py3.12.egg-info/PKG-INFO
+[2.793s] -- Installing: /home/yoshida/study/ros2/install/mid360_driver/lib/python3.12/site-packages/mid360_driver-0.1.0-py3.12.egg-info/dependency_links.txt
+[2.793s] -- Installing: /home/yoshida/study/ros2/install/mid360_driver/lib/python3.12/site-packages/mid360_driver-0.1.0-py3.12.egg-info/top_level.txt
+[2.793s] -- Installing: /home/yoshida/study/ros2/install/mid360_driver/lib/python3.12/site-packages/mid360_driver-0.1.0-py3.12.egg-info/SOURCES.txt
+[2.793s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/python3.12/site-packages/mid360_driver
+[2.793s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/python3.12/site-packages/mid360_driver/mid360_driver_s__rosidl_typesupport_introspection_c.so
+[2.793s] -- Installing: /home/yoshida/study/ros2/install/mid360_driver/lib/python3.12/site-packages/mid360_driver/__init__.py
+[2.794s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/python3.12/site-packages/mid360_driver/mid360_driver_s__rosidl_typesupport_c.so
+[2.794s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/python3.12/site-packages/mid360_driver/_mid360_driver_s.ep.rosidl_typesupport_c.c
+[2.794s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/python3.12/site-packages/mid360_driver/mid360_driver_s__rosidl_typesupport_fastrtps_c.so
+[2.794s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/python3.12/site-packages/mid360_driver/_mid360_driver_s.ep.rosidl_typesupport_introspection_c.c
+[2.794s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/python3.12/site-packages/mid360_driver/_mid360_driver_s.ep.rosidl_typesupport_fastrtps_c.c
+[2.794s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/python3.12/site-packages/mid360_driver/msg
+[2.794s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/python3.12/site-packages/mid360_driver/msg/__init__.py
+[2.795s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/python3.12/site-packages/mid360_driver/msg/_custom_point_s.c
+[2.795s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/python3.12/site-packages/mid360_driver/msg/_custom_msg_s.c
+[2.795s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/python3.12/site-packages/mid360_driver/msg/_custom_point.py
+[2.795s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/python3.12/site-packages/mid360_driver/msg/_custom_msg.py
+[2.880s] Listing '/home/yoshida/study/ros2/install/mid360_driver/lib/python3.12/site-packages/mid360_driver'...
+[2.880s] Compiling '/home/yoshida/study/ros2/install/mid360_driver/lib/python3.12/site-packages/mid360_driver/__init__.py'...
+[2.880s] Listing '/home/yoshida/study/ros2/install/mid360_driver/lib/python3.12/site-packages/mid360_driver/msg'...
+[2.887s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/python3.12/site-packages/mid360_driver/mid360_driver_s__rosidl_typesupport_fastrtps_c.so
+[2.888s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/python3.12/site-packages/mid360_driver/mid360_driver_s__rosidl_typesupport_introspection_c.so
+[2.888s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/python3.12/site-packages/mid360_driver/mid360_driver_s__rosidl_typesupport_c.so
+[2.889s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/libmid360_driver__rosidl_generator_py.so
+[2.890s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/msg/CustomPoint.idl
+[2.890s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/msg/CustomMsg.idl
+[2.890s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/msg/CustomPoint.msg
+[2.891s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/msg/CustomMsg.msg
+[2.891s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/lib/mid360_driver/mid360_driver_node
+[2.891s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/launch
+[2.891s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/launch/mid360.launch.xml
+[2.891s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/config
+[2.891s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/config/mid360_config.yaml
+[2.891s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/ament_index/resource_index/package_run_dependencies/mid360_driver
+[2.891s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/ament_index/resource_index/parent_prefix_path/mid360_driver
+[2.892s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/environment/ament_prefix_path.sh
+[2.892s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/environment/ament_prefix_path.dsv
+[2.892s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/environment/path.sh
+[2.893s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/environment/path.dsv
+[2.893s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/local_setup.bash
+[2.893s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/local_setup.sh
+[2.893s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/local_setup.zsh
+[2.894s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/local_setup.dsv
+[2.894s] -- Installing: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/package.dsv
+[2.894s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/ament_index/resource_index/packages/mid360_driver
+[2.894s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/export_mid360_driver__rosidl_generator_cExport.cmake
+[2.894s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/export_mid360_driver__rosidl_generator_cExport-noconfig.cmake
+[2.894s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/export_mid360_driver__rosidl_typesupport_fastrtps_cExport.cmake
+[2.894s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/export_mid360_driver__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+[2.894s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/export_mid360_driver__rosidl_generator_cppExport.cmake
+[2.895s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/export_mid360_driver__rosidl_typesupport_fastrtps_cppExport.cmake
+[2.895s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/export_mid360_driver__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+[2.895s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/mid360_driver__rosidl_typesupport_introspection_cExport.cmake
+[2.895s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/mid360_driver__rosidl_typesupport_introspection_cExport-noconfig.cmake
+[2.895s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/mid360_driver__rosidl_typesupport_cExport.cmake
+[2.895s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/mid360_driver__rosidl_typesupport_cExport-noconfig.cmake
+[2.895s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/mid360_driver__rosidl_typesupport_introspection_cppExport.cmake
+[2.896s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/mid360_driver__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+[2.896s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/mid360_driver__rosidl_typesupport_cppExport.cmake
+[2.896s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/mid360_driver__rosidl_typesupport_cppExport-noconfig.cmake
+[2.896s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/export_mid360_driver__rosidl_generator_pyExport.cmake
+[2.896s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/export_mid360_driver__rosidl_generator_pyExport-noconfig.cmake
+[2.896s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/rosidl_cmake-extras.cmake
+[2.896s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/ament_cmake_export_dependencies-extras.cmake
+[2.896s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/ament_cmake_export_include_directories-extras.cmake
+[2.896s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/ament_cmake_export_libraries-extras.cmake
+[2.896s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/ament_cmake_export_targets-extras.cmake
+[2.896s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+[2.897s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+[2.897s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/mid360_driverConfig.cmake
+[2.897s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/cmake/mid360_driverConfig-version.cmake
+[2.897s] -- Up-to-date: /home/yoshida/study/ros2/install/mid360_driver/share/mid360_driver/package.xml
+[2.898s] Invoked command in '/home/yoshida/study/ros2/build/mid360_driver' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/yoshida/study/ros2/build/mid360_driver

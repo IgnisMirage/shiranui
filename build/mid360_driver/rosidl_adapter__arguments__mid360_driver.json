@@ -1,0 +1,7 @@
+{
+  "package_name": "mid360_driver",
+  "non_idl_tuples": [
+    "/home/yoshida/study/ros2/src/mid360_driver:msg/Mid360RawPacket.msg",
+    "/home/yoshida/study/ros2/src/mid360_driver:msg/Mid360Packet.msg"
+  ]
+}
