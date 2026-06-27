@@ -1,9 +1,0 @@
-/**:
-  ros__parameters:
-    host_ip: "192.168.1.15"
-    lidar_ip: "192.168.1.125"
-    frame_id: "mid360"
-    push_msg_port: 56201
-    point_data_port: 56301
-    imu_data_port: 56401
-    publish_rate: 10.0

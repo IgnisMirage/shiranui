@@ -1,9 +1,0 @@
-<launch>
-  <arg name="input_topic" default="/mid360/packet"/>
-  <arg name="output_topic" default="/mid360/points"/>
-
-  <node pkg="mid360_driver" exec="mid360_packet_to_cloud_node" name="mid360_packet_to_cloud" output="screen">
-    <param name="input_topic" value="$(var input_topic)"/>
-    <param name="output_topic" value="$(var output_topic)"/>
-  </node>
-</launch>
