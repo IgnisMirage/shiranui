@@ -1,0 +1,11 @@
+/**:
+  footprint_publisher:
+    ros__parameters:
+      frame_id: "base_link"
+      publish_rate: 1.0
+      # base_link 座標系 (x: 前, y: 左) の多角形頂点 [m]
+      vertices:
+        - "0.30, 0.20"    # 前左
+        - "-0.30, 0.20"   # 後左
+        - "-0.30, -0.20"  # 後右
+        - "0.30, -0.20"   # 前右

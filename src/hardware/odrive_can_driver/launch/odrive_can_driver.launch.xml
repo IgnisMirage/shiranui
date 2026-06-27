@@ -1,0 +1,16 @@
+<launch>
+  <!-- ラウンチ引数の宣言 -->
+  <arg name="can_interface" default="can0" description="CAN interface name"/>
+  <arg name="left_wheel_node_id" default="1" description="Left wheel ODrive node ID"/>
+  <arg name="right_wheel_node_id" default="2" description="Right wheel ODrive node ID"/>
+
+  <!-- ODrive CAN Driverノード -->
+  <node pkg="odrive_can_driver" exec="odrive_can_driver_node" name="odrive_can_driver" output="screen">
+    <!-- 設定ファイル -->
+    <param from="$(find-pkg-share odrive_can_driver)/config/odrive_can_driver.yaml"/>
+    <!-- 引数で上書きするパラメータ -->
+    <param name="can_interface" value="$(var can_interface)"/>
+    <param name="left_wheel_node_id" value="$(var left_wheel_node_id)"/>
+    <param name="right_wheel_node_id" value="$(var right_wheel_node_id)"/>
+  </node>
+</launch>

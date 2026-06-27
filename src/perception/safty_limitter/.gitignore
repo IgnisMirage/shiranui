@@ -1,0 +1,7 @@
+# IDE
+.vscode/
+.idea/
+
+# ROS
+*.pyc
+__pycache__/

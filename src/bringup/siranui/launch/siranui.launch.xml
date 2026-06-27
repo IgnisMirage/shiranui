@@ -1,0 +1,110 @@
+<launch>
+  <arg name="planner" default="pure_pursuit"
+       description="使用するプランナーを選択 (pure_pursuit / stanley / mppi)">
+    <choice value="pure_pursuit"/>
+    <choice value="stanley"/>
+    <choice value="mppi"/>
+  </arg>
+
+  <arg name="foxglove" default="true" description="Foxglove Bridge を起動するか (true/false)"/>
+  <arg name="foxglove_port" default="8765" description="Foxglove Bridge の待ち受けポート"/>
+
+  <arg name="a_star" default="true" description="A* グローバルプランナーを起動するか (true/false)"/>
+
+  <arg name="map" default="true" description="map_server で地図を表示するか (true/false)"/>
+  <arg name="lidar_sim" default="true" description="2D LiDAR シミュレータを起動するか (true/false)"/>
+  <arg name="safety_limiter" default="true" description="安全監視ノードを起動するか (true/false)"/>
+  <arg name="map_yaml" default="$(find-pkg-share siranui)/map/map.yaml"
+       description="読み込む地図の yaml ファイル"/>
+
+  <include file="$(find-pkg-share foxglove_bridge)/launch/foxglove_bridge_launch.xml"
+           if="$(var foxglove)">
+    <arg name="port" value="$(var foxglove_port)"/>
+  </include>
+
+  <node pkg="robot_sim" exec="cmd_vel_to_tf_node" name="cmd_vel_to_tf" output="screen">
+    <param from="$(find-pkg-share robot_sim)/config/robot_sim_params.yaml"/>
+  </node>
+
+  <node pkg="robot_sim" exec="footprint_publisher_node" name="footprint_publisher"
+        output="screen">
+    <param from="$(find-pkg-share siranui)/config/footprint_params.yaml"/>
+  </node>
+
+  <node pkg="robot_sim" exec="map_obstacle_layer_node" name="map_obstacle_layer"
+        output="screen" if="$(var map)">
+    <param from="$(find-pkg-share robot_sim)/config/map_obstacle_layer_params.yaml"/>
+  </node>
+
+  <node pkg="robot_sim" exec="lidar_sim_node" name="lidar_sim" output="screen"
+        if="$(var lidar_sim)">
+    <param from="$(find-pkg-share robot_sim)/config/lidar_sim_params.yaml"/>
+    <remap from="map" to="map_with_obstacles"/>
+  </node>
+
+  <node pkg="pointcloud_to_laserscan" exec="laserscan_to_pointcloud_node"
+        name="laserscan_to_pointcloud" output="screen" if="$(var lidar_sim)">
+    <param from="$(find-pkg-share siranui)/config/scan_to_pointcloud_params.yaml"/>
+    <remap from="scan_in" to="scan"/>
+    <remap from="cloud" to="cloud"/>
+  </node>
+
+  <node pkg="safety_limiter" exec="safety_limiter" name="safety_limiter" output="screen"
+        if="$(var safety_limiter)">
+    <param from="$(find-pkg-share safety_limiter)/config/safety_limiter_params.yaml"/>
+    <remap from="cloud" to="cloud"/>
+    <remap from="footprint" to="footprint"/>
+  </node>
+
+  <node pkg="nav2_map_server" exec="map_server" name="map_server" output="screen"
+        if="$(var map)">
+    <param name="yaml_filename" value="$(var map_yaml)"/>
+    <param name="topic_name" value="map"/>
+    <param name="frame_id" value="map"/>
+    <param name="use_sim_time" value="false"/>
+  </node>
+
+  <node pkg="nav2_lifecycle_manager" exec="lifecycle_manager" name="lifecycle_manager_map"
+        output="screen" if="$(var map)">
+    <param name="autostart" value="true"/>
+    <param name="node_names" value="['map_server']"/>
+    <param name="use_sim_time" value="false"/>
+  </node>
+
+  <node pkg="a_star_planner" exec="a_star_component" name="a_star_planner_node"
+        output="screen" if="$(var a_star)">
+    <param from="$(find-pkg-share a_star_planner)/config/planner_params.yaml"/>
+    <param name="use_sim_time" value="false"/>
+  </node>
+
+  <node pkg="pure_pursuit_planner" exec="pure_pursuit_planner_node" name="pure_pursuit_planner"
+        output="screen"
+        if="$(eval '&quot;$(var planner)&quot; == &quot;pure_pursuit&quot; and &quot;$(var safety_limiter)&quot; == &quot;true&quot;')">
+    <param from="$(find-pkg-share pure_pursuit_planner)/config/pure_pursuit_params.yaml"/>
+    <remap from="/auto_cmd_vel" to="/cmd_vel_in"/>
+  </node>
+
+  <node pkg="pure_pursuit_planner" exec="pure_pursuit_planner_node" name="pure_pursuit_planner_direct"
+        output="screen"
+        if="$(eval '&quot;$(var planner)&quot; == &quot;pure_pursuit&quot; and &quot;$(var safety_limiter)&quot; == &quot;false&quot;')">
+    <param from="$(find-pkg-share pure_pursuit_planner)/config/pure_pursuit_params.yaml"/>
+    <remap from="/auto_cmd_vel" to="/cmd_vel"/>
+  </node>
+
+  <node pkg="stanley_planner" exec="stanley_planner_node" name="stanley_planner"
+        output="screen"
+        if="$(eval '&quot;$(var planner)&quot; == &quot;stanley&quot; and &quot;$(var safety_limiter)&quot; == &quot;true&quot;')">
+    <param from="$(find-pkg-share stanley_planner)/config/stanley_params.yaml"/>
+    <remap from="/auto_cmd_vel" to="/cmd_vel_in"/>
+  </node>
+
+  <node pkg="stanley_planner" exec="stanley_planner_node" name="stanley_planner_direct"
+        output="screen"
+        if="$(eval '&quot;$(var planner)&quot; == &quot;stanley&quot; and &quot;$(var safety_limiter)&quot; == &quot;false&quot;')">
+    <param from="$(find-pkg-share stanley_planner)/config/stanley_params.yaml"/>
+    <remap from="/auto_cmd_vel" to="/cmd_vel"/>
+  </node>
+
+  <node pkg="mppi_planner" exec="mppi_node" name="mppi_planner"
+        output="screen" if="$(equals $(var planner) mppi)"/>
+</launch>

@@ -1,0 +1,7 @@
+<launch>
+  <node pkg="pure_pursuit_planner" exec="pure_pursuit_planner_node" name="pure_pursuit_planner"
+        output="screen">
+    <param from="$(find-pkg-share pure_pursuit_planner)/config/pure_pursuit_params.yaml"/>
+    <remap from="/auto_cmd_vel" to="/cmd_vel"/>
+  </node>
+</launch>

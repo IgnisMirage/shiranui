@@ -1,0 +1,5 @@
+<launch>
+  <node pkg="robot_sim" exec="lidar_sim_node" name="lidar_sim" output="screen">
+    <param from="$(find-pkg-share robot_sim)/config/lidar_sim_params.yaml"/>
+  </node>
+</launch>

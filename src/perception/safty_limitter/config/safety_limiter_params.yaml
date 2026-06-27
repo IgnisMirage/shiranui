@@ -1,0 +1,22 @@
+/**:
+  safety_limiter:
+    ros__parameters:
+      robot_frame: "base_link"
+      map_frame: "map"
+      publish_rate: 10.0
+      prediction_time: 2.0
+      prediction_step: 0.1
+      footprint_margin: 0.15
+      enable_visualization: true
+      visualization_stride: 3
+
+      # トピック名（launch の remap と合わせる）
+      cmd_vel_in_topic: "cmd_vel_in"
+      cmd_vel_out_topic: "cmd_vel"
+      cloud_topic: "cloud"
+      footprint_topic: "footprint"
+      future_motion_prediction_topic: "future_motion_prediction"
+      future_motion_markers_topic: "future_motion_markers"
+      cloud_in_map_topic: "cloud_in_map"
+      collision_topic: "collision"
+      collision_margin_topic: "collision_margin"

@@ -1,0 +1,14 @@
+/**:
+  stanley_planner:
+    ros__parameters:
+      k_gain: 1.0                  # 横方向誤差ゲイン（大きいほど復帰が速い）
+      k_soft: 0.5                  # 低速時の発散を防ぐソフトニング定数
+      k_yaw: 1.0                   # ステアリング指令から角速度への変換ゲイン
+      front_axle_distance: 0.2     # ロボット中心から前車軸までの距離（m）
+      linear_velocity: 0.3         # 線形速度（m/s）
+      max_angular_velocity: 1.0    # 最大角速度（rad/s）
+      goal_tolerance: 0.2          # ゴール許容誤差（m）
+      robot_frame_id: "base_link"  # ロボットのフレームID
+      map_frame_id: "map"          # マップのフレームID
+      rotation_threshold: 0.1      # 回転状態の角度閾値（rad）
+      rotation_velocity: 0.5       # その場回転時の角速度（rad/s）

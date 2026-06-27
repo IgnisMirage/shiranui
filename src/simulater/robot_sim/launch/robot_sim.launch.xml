@@ -1,0 +1,6 @@
+<launch>
+  <!-- cmd_vel を積分して map->base_link の TF を発行するノード -->
+  <node pkg="robot_sim" exec="cmd_vel_to_tf_node" name="cmd_vel_to_tf" output="screen">
+    <param from="$(find-pkg-share robot_sim)/config/robot_sim_params.yaml"/>
+  </node>
+</launch>

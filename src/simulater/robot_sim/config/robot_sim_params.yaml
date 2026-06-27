@@ -1,0 +1,8 @@
+/**:
+  ros__parameters:
+    map_frame_id: "map"        # 親フレーム
+    base_frame_id: "base_link" # 子フレーム
+    publish_rate: 50.0         # TF 発行レート [Hz]
+    initial_x: 0.0             # 初期位置 x [m]
+    initial_y: 0.0             # 初期位置 y [m]
+    initial_yaw: 0.0           # 初期ヨー角 [rad]

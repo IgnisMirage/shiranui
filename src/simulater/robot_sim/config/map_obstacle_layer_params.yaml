@@ -1,0 +1,32 @@
+/**:
+  ros__parameters:
+    input_map_topic: "map"
+    output_map_topic: "map_with_obstacles"
+    update_rate: 10.0
+    obstacle_cost_value: 100
+
+    # siranui/map/map.yaml:
+    #   origin: [-10, -10, 0], resolution: 0.02, image: map.png (992x992)
+    #   free_thresh: 0.196, occupied_thresh: 0.65
+    # 通行可能エリアは細い通路のみ。障害物は通路内座標に配置する。
+
+    # 静的障害物: center_x, center_y, width, height [m]
+    static_obstacles:
+      - "-3.64, -8.00, 0.10, 0.10"   # 下部通路
+      - "-6.50, -4.00, 0.10, 0.10"   # 中下通路
+      - "-5.14, 0.00, 0.10, 0.10"    # 中央通路 (左)
+      - "1.14, 0.00, 0.10, 0.10"     # 中央通路 (右)
+      - "-4.98, 3.50, 0.10, 0.10"    # 上部通路
+
+    # 動的障害物 (先頭 token でパターン指定)
+    #
+    # linear: start_x, start_y, end_x, end_y, width, height, speed [m/s]  前後往復
+    # circular: center_x, center_y, radius, width, height, speed [m/s]   円周移動
+    # loop: min_x, min_y, max_x, max_y, width, height, speed [m/s]       矩形を周回
+    dynamic_obstacles:
+      - "linear, -3.78, -8.00, -3.34, -8.00, 0.10, 0.10, 0.15"   # 下部: 短距離往復
+      - "linear, -5.20, 0.00, 1.16, 0.00, 0.10, 0.10, 0.25"      # 中央: 長距離往復
+      - "linear, -5.02, 3.50, 1.34, 3.50, 0.10, 0.10, 0.20"      # 上部: 長距離往復
+      - "circular, -6.50, -4.00, 0.15, 0.10, 0.10, 0.12"          # 中下: 小さな円
+      - "circular, -3.00, 3.50, 0.25, 0.10, 0.10, 0.12"           # 上部: 円周
+      - "loop, -6.60, -4.10, -6.30, -3.90, 0.10, 0.10, 0.12"      # 中下: 小矩形周回

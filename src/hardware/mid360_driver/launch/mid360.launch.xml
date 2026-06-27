@@ -1,0 +1,17 @@
+<launch>
+  <arg name="config_file" default="$(find-pkg-share mid360_driver)/config/mid360_config.yaml"/>
+  <arg name="host_ip" default="192.168.1.15"/>
+  <arg name="lidar_ip" default="192.168.1.125"/>
+  <arg name="points_topic" default="/mid360/points"/>
+  <arg name="packet_topic" default="/mid360/packet"/>
+  <arg name="imu_topic" default="/mid360/imu"/>
+
+  <node pkg="mid360_driver" exec="mid360_driver_node" name="mid360_driver" output="screen">
+    <param from="$(var config_file)"/>
+    <param name="host_ip" value="$(var host_ip)"/>
+    <param name="lidar_ip" value="$(var lidar_ip)"/>
+    <remap from="points" to="$(var points_topic)"/>
+    <remap from="packet" to="$(var packet_topic)"/>
+    <remap from="imu" to="$(var imu_topic)"/>
+  </node>
+</launch>

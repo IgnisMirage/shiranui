@@ -1,0 +1,21 @@
+/**:
+  pure_pursuit_planner:
+    ros__parameters:
+      lookahead_distance: 0.8
+      min_lookahead_distance: 0.3
+      linear_velocity: 0.8
+      max_angular_velocity: 1.0
+      goal_tolerance: 0.03
+      rotation_threshold: 0.03
+      rotation_velocity: 0.5
+      deceleration: 0.5
+      acceleration: 0.2
+      curvature_safety_factor: 0.6
+      max_velocity: 1.0
+      sensor_delay: 0.01
+      goal_approach_distance: 0.0
+      goal_approach_speed: 0.05
+      slow_speed_lookahead_threshold: 0.1
+      slow_speed_lookahead_distance: 0.35
+      robot_frame_id: "base_link"
+      map_frame_id: "map"

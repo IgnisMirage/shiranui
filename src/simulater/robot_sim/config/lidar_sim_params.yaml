@@ -1,0 +1,26 @@
+/**:
+  ros__parameters:
+    map_frame_id: "map"
+    base_frame_id: "base_link"
+    laser_frame_id: "laser"
+    scan_topic: "scan"
+    publish_rate: 10.0
+    range_min: 0.05
+    range_max: 30.0
+    angle_min: -3.141592653589793
+    angle_max: 3.141592653589793
+    # 角分解能 [deg]（>0 なら num_beams を自動計算。0.5° → 360°で720本）
+    angular_resolution_deg: 0.5
+    num_beams: 720              # angular_resolution_deg=0 のときのみ使用
+    # 距離分解能 [m]（0=無効。例: 0.01 → 1cm刻み）
+    range_resolution: 0.01
+    occupied_threshold: 50
+    laser_x: 0.0
+    laser_y: 0.0
+    laser_yaw: 0.0
+    publish_laser_tf: true
+    enable_noise: true
+    range_stddev: 0.015         # 真値位置からの距離ジッター σ [m]
+    dropout_probability: 0.005  # ビーム欠測確率（点が消える。ゴーストではない）
+    intensity_stddev: 8.0
+    random_seed: 0
