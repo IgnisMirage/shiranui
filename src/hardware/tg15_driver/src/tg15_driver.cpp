@@ -22,8 +22,10 @@ TG15Driver::TG15Driver(const rclcpp::NodeOptions & options)
   frame_id_ = this->declare_parameter("frame_id", "laser_frame");
   range_min_ = this->declare_parameter("range_min", 0.05);
   range_max_ = this->declare_parameter("range_max", 15.0);
-  angle_min_deg_ = this->declare_parameter("angle_min_deg", 0.0);
-  angle_max_deg_ = this->declare_parameter("angle_max_deg", 360.0);
+  angle_min_deg_1_ = this->declare_parameter("angle_min_deg_1", 0.0);
+  angle_max_deg_1_ = this->declare_parameter("angle_max_deg_1", 40.0);
+  angle_min_deg_2_ = this->declare_parameter("angle_min_deg_2", 320.0);
+  angle_max_deg_2_ = this->declare_parameter("angle_max_deg_2", 360.0);
   scan_frequency_ = this->declare_parameter("scan_frequency", 10.0);
   reversion_ = this->declare_parameter("reversion", true);
   inverted_ = this->declare_parameter("inverted", true);
@@ -495,16 +497,11 @@ void TG15Driver::publish_scan(const rclcpp::Time & stamp)
   for (const auto & p : revolution_points_) {
     double angle_deg = p.angle_deg;
 
-    // 使用角度範囲フィルタ（ライダー座標系の生角度で判定）
-    // min > max の場合は0度をまたぐ範囲（例: 300〜60度）として扱う
-    if (angle_min_deg_ <= angle_max_deg_) {
-      if (angle_deg < angle_min_deg_ || angle_deg > angle_max_deg_) {
-        continue;
-      }
-    } else {
-      if (angle_deg < angle_min_deg_ && angle_deg > angle_max_deg_) {
-        continue;
-      }
+    // 使用角度範囲フィルタ（2つの独立した範囲を対応）
+    bool in_range1 = (angle_deg >= angle_min_deg_1_ && angle_deg <= angle_max_deg_1_);
+    bool in_range2 = (angle_deg >= angle_min_deg_2_ && angle_deg <= angle_max_deg_2_);
+    if (!in_range1 && !in_range2) {
+      continue;  // 両範囲外なら無視
     }
 
     if (reversion_) {

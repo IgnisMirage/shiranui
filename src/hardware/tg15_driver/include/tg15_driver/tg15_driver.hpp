@@ -49,8 +49,10 @@ private:
   std::string frame_id_;        // スキャンのフレームID
   double range_min_;            // 最小距離 [m]
   double range_max_;            // 最大距離 [m]
-  double angle_min_deg_;        // 使用角度の下限 [deg]（ライダー座標系 0〜360）
-  double angle_max_deg_;        // 使用角度の上限 [deg]（ライダー座標系 0〜360）
+  double angle_min_deg_1_;      // 使用角度範囲1の下限 [deg]
+  double angle_max_deg_1_;      // 使用角度範囲1の上限 [deg]
+  double angle_min_deg_2_;      // 使用角度範囲2の下限 [deg]
+  double angle_max_deg_2_;      // 使用角度範囲2の上限 [deg]
   double scan_frequency_;       // 目標スキャン周波数 [Hz]
   bool reversion_;              // 180度回転補正
   bool inverted_;               // 回転方向反転（CCW正のROS規約に合わせる）
