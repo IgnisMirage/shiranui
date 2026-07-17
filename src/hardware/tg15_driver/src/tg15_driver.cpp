@@ -22,14 +22,29 @@ TG15Driver::TG15Driver(const rclcpp::NodeOptions & options)
   frame_id_ = this->declare_parameter("frame_id", "laser_frame");
   range_min_ = this->declare_parameter("range_min", 0.05);
   range_max_ = this->declare_parameter("range_max", 15.0);
-  angle_min_deg_1_ = this->declare_parameter("angle_min_deg_1", 0.0);
-  angle_max_deg_1_ = this->declare_parameter("angle_max_deg_1", 40.0);
-  angle_min_deg_2_ = this->declare_parameter("angle_min_deg_2", 320.0);
-  angle_max_deg_2_ = this->declare_parameter("angle_max_deg_2", 360.0);
+  angle_offset_deg_ = this->declare_parameter("angle_offset_deg", 0.0);
+  angle_ranges_min_ = this->declare_parameter("angle_ranges_min", std::vector<double>{0.0});
+  angle_ranges_max_ = this->declare_parameter("angle_ranges_max", std::vector<double>{180.0});
+  if (angle_ranges_min_.size() != angle_ranges_max_.size() || angle_ranges_min_.empty()) {
+    RCLCPP_ERROR(this->get_logger(),
+      "angle_ranges_min/angle_ranges_max must be non-empty and the same length "
+      "(got %zu and %zu). Falling back to full 0-360 deg range.",
+      angle_ranges_min_.size(), angle_ranges_max_.size());
+    angle_ranges_min_ = {0.0};
+    angle_ranges_max_ = {360.0};
+  }
   scan_frequency_ = this->declare_parameter("scan_frequency", 10.0);
-  reversion_ = this->declare_parameter("reversion", true);
   inverted_ = this->declare_parameter("inverted", true);
   invalid_range_is_inf_ = this->declare_parameter("invalid_range_is_inf", false);
+
+  // 角度フィルタはinverted・angle_offset_deg適用後の角度で判定される。
+  // 実際に有効となる範囲を起動時にログで確認できるようにする。
+  for (size_t r = 0; r < angle_ranges_min_.size(); ++r) {
+    RCLCPP_INFO(this->get_logger(),
+      "Angle filter[%zu]: %.1f - %.1f deg (in output angle, after inverted=%s, angle_offset_deg=%.1f)",
+      r, angle_ranges_min_[r], angle_ranges_max_[r],
+      inverted_ ? "true" : "false", angle_offset_deg_);
+  }
 
   scan_pub_ = this->create_publisher<sensor_msgs::msg::LaserScan>(
     "scan", rclcpp::SensorDataQoS());
@@ -495,22 +510,31 @@ void TG15Driver::publish_scan(const rclcpp::Time & stamp)
   msg->ranges.assign(n, invalid);
 
   for (const auto & p : revolution_points_) {
-    double angle_deg = p.angle_deg;
-
-    // 使用角度範囲フィルタ（2つの独立した範囲を対応）
-    bool in_range1 = (angle_deg >= angle_min_deg_1_ && angle_deg <= angle_max_deg_1_);
-    bool in_range2 = (angle_deg >= angle_min_deg_2_ && angle_deg <= angle_max_deg_2_);
-    if (!in_range1 && !in_range2) {
-      continue;  // 両範囲外なら無視
-    }
-
-    if (reversion_) {
-      angle_deg += 180.0;
-    }
-    double angle_rad = angle_deg * M_PI / 180.0;
+    // ライダー生角度 → inverted・angle_offset_deg適用後の「出力上の角度」に変換
+    // 使用角度範囲フィルタはこの出力角度基準で判定する（rvizで見た向きと一致させるため）
+    double logical_deg = p.angle_deg;
     if (inverted_) {
-      angle_rad = -angle_rad;  // ライダーは時計回り、ROSは反時計回り正
+      logical_deg = -logical_deg;
     }
+    logical_deg += angle_offset_deg_;
+    logical_deg = std::fmod(logical_deg, 360.0);
+    if (logical_deg < 0) {
+      logical_deg += 360.0;
+    }
+
+    // 使用角度範囲フィルタ（任意個数の範囲のいずれかを満たせば有効）
+    bool in_any_range = false;
+    for (size_t r = 0; r < angle_ranges_min_.size(); ++r) {
+      if (logical_deg >= angle_ranges_min_[r] && logical_deg <= angle_ranges_max_[r]) {
+        in_any_range = true;
+        break;
+      }
+    }
+    if (!in_any_range) {
+      continue;  // どの範囲にも入らなければ無視
+    }
+
+    double angle_rad = logical_deg * M_PI / 180.0;
     // [-π, π) に正規化
     angle_rad = std::fmod(angle_rad + M_PI, 2.0 * M_PI);
     if (angle_rad < 0) {

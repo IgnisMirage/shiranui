@@ -6,11 +6,11 @@
       frame_id: "laser_frame"     # スキャンのフレームID
       range_min: 0.05             # 最小距離 [m]
       range_max: 15.0             # 最大距離 [m]（TG15の最大測距）
-      angle_min_deg_1: 0.0        # 使用角度範囲1の下限 [deg]
-      angle_max_deg_1: 180.0      # 使用角度範囲1の上限 [deg]
-      angle_min_deg_2: 0.0        # 使用角度範囲2の下限 [deg]（不使用）
-      angle_max_deg_2: 0.0        # 使用角度範囲2の上限 [deg]（不使用）
+      angle_offset_deg: -90.0       # 角度基準のオフセット（0度の向きを回したいときに使う）
+      # 使用角度範囲（inverted・angle_offset_deg適用後の角度で判定。配列のi番目同士がペアで1つの範囲）
+      # 例: 2エリア使う場合 → min: [0.0, 320.0], max: [40.0, 360.0]
+      angle_ranges_min: [30.0]
+      angle_ranges_max: [150.0]
       scan_frequency: 10.0        # スキャン周波数 [Hz]（3.0〜15.7）
-      reversion: true             # 180度回転補正
       inverted: true              # 回転方向反転（ROSのCCW正に合わせる）
       invalid_range_is_inf: false # 無効点をinfにする（falseなら0.0）

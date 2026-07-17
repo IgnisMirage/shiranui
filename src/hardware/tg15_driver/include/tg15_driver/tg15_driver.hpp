@@ -49,12 +49,13 @@ private:
   std::string frame_id_;        // スキャンのフレームID
   double range_min_;            // 最小距離 [m]
   double range_max_;            // 最大距離 [m]
-  double angle_min_deg_1_;      // 使用角度範囲1の下限 [deg]
-  double angle_max_deg_1_;      // 使用角度範囲1の上限 [deg]
-  double angle_min_deg_2_;      // 使用角度範囲2の下限 [deg]
-  double angle_max_deg_2_;      // 使用角度範囲2の上限 [deg]
+  double angle_offset_deg_;     // 角度基準のオフセット [deg]（取り付け向きの補正用）
+  // 使用角度範囲（複数指定可、いずれかを満たせば有効点として扱う）
+  // angle_offset_deg適用後の角度に対して判定する
+  // angle_ranges_min[i]〜angle_ranges_max[i] が1つの範囲を表す
+  std::vector<double> angle_ranges_min_;
+  std::vector<double> angle_ranges_max_;
   double scan_frequency_;       // 目標スキャン周波数 [Hz]
-  bool reversion_;              // 180度回転補正
   bool inverted_;               // 回転方向反転（CCW正のROS規約に合わせる）
   bool invalid_range_is_inf_;   // 無効点をinfにするか（falseなら0.0）
 
