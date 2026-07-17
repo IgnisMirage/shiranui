@@ -1,0 +1,14 @@
+/**:
+  tg15_driver:
+    ros__parameters:
+      port: "/dev/ttyUSB0"        # シリアルポートデバイス
+      baudrate: 512000            # ボーレート（TG15は512000固定）
+      frame_id: "laser_frame"     # スキャンのフレームID
+      range_min: 0.05             # 最小距離 [m]
+      range_max: 15.0             # 最大距離 [m]（TG15の最大測距）
+      angle_min_deg: 35.0         # 使用角度の下限 [deg]（デフォルト0=全周）
+      angle_max_deg: 155.0        # 使用角度の上限 [deg]（デフォルト360=全周）
+      scan_frequency: 10.0        # スキャン周波数 [Hz]（3.0〜15.7）
+      reversion: true             # 180度回転補正
+      inverted: true              # 回転方向反転（ROSのCCW正に合わせる）
+      invalid_range_is_inf: false # 無効点をinfにする（falseなら0.0）

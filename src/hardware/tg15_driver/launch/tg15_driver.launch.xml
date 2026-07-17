@@ -1,0 +1,14 @@
+<launch>
+  <!-- ラウンチ引数の宣言 -->
+  <arg name="port" default="/dev/ttyUSB0" description="Serial port device"/>
+  <arg name="frame_id" default="laser_frame" description="LaserScan frame ID"/>
+
+  <!-- TG15 Driverノード -->
+  <node pkg="tg15_driver" exec="tg15_driver_node" name="tg15_driver" output="screen">
+    <!-- 設定ファイル -->
+    <param from="$(find-pkg-share tg15_driver)/config/tg15_params.yaml"/>
+    <!-- 引数で上書きするパラメータ -->
+    <param name="port" value="$(var port)"/>
+    <param name="frame_id" value="$(var frame_id)"/>
+  </node>
+</launch>
