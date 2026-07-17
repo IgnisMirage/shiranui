@@ -7,9 +7,9 @@
       range_min: 0.05             # 最小距離 [m]
       range_max: 15.0             # 最大距離 [m]（TG15の最大測距）
       angle_min_deg_1: 0.0        # 使用角度範囲1の下限 [deg]
-      angle_max_deg_1: 40.0      # 使用角度範囲1の上限 [deg]
-      angle_min_deg_2: 320.0      # 使用角度範囲2の下限 [deg]（不使用時は min > max）
-      angle_max_deg_2: 360.0        # 使用角度範囲2の上限 [deg]
+      angle_max_deg_1: 180.0      # 使用角度範囲1の上限 [deg]
+      angle_min_deg_2: 0.0        # 使用角度範囲2の下限 [deg]（不使用）
+      angle_max_deg_2: 0.0        # 使用角度範囲2の上限 [deg]（不使用）
       scan_frequency: 10.0        # スキャン周波数 [Hz]（3.0〜15.7）
       reversion: true             # 180度回転補正
       inverted: true              # 回転方向反転（ROSのCCW正に合わせる）
