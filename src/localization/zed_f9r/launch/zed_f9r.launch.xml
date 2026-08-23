@@ -1,0 +1,10 @@
+<launch>
+  <arg name="port" default="/dev/serial0" description="Raspberry Pi UART connected to the ZED-F9R"/>
+  <arg name="baudrate" default="38400" description="ZED-F9R UART1 baudrate"/>
+
+  <node pkg="zed_f9r" exec="zed_f9r_node" name="zed_f9r_node" output="screen">
+    <param from="$(find-pkg-share zed_f9r)/config/zed_f9r_params.yaml"/>
+    <param name="port" value="$(var port)"/>
+    <param name="baudrate" value="$(var baudrate)"/>
+  </node>
+</launch>

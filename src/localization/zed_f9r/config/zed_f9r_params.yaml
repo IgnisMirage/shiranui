@@ -1,0 +1,24 @@
+/**:
+  zed_f9r_node:
+    ros__parameters:
+      # --- 接続 ---
+      # pHat は Raspberry Pi の UART (GPIO 8/10 ピン) につながる
+      port: "/dev/serial0"
+      baudrate: 38400          # ZED-F9R UART1 の工場出荷値
+      serial_timeout: 1.0      # pyserial の read タイムアウト [s]
+
+      # --- 受信機設定 (CFG-VALSET, RAM レイヤのみ / 出力先は UART1 固定) ---
+      configure_receiver: true # 起動時に UBX 出力設定を投入する
+      disable_nmea: true       # NMEA を止めて UBX だけを流す
+      measurement_rate_ms: 100 # 測位周期 [ms]（100ms = 10Hz）
+
+      # --- 出力 ---
+      frame_id: "gps_link"
+      imu_frame_id: "imu_link"
+      fix_topic: "/fix"
+      vel_topic: "/fix_velocity"
+      imu_topic: "/imu/data"
+      publish_imu: true        # UBX-NAV-ATT から姿勢を配信する
+      use_msl_altitude: false  # false: 楕円体高（NavSatFix の規約）/ true: 平均海面高
+      rate_hz: 10.0            # 取得ループの上限レート [Hz]
+      wait_time_ms: 1000       # 1 メッセージあたりの待ち時間 [ms]

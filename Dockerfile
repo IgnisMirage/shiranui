@@ -23,6 +23,16 @@ RUN wget -q "https://github.com/Livox-SDK/Livox-SDK2/archive/refs/tags/${LIVOX_S
  && cd / \
  && rm -rf /tmp/livox-sdk2.zip "/tmp/Livox-SDK2-${SHORT_TAG}"
 
+# zed_f9r (u-blox ZED-F9R) 用。sparkfun-ublox-gps は rosdep に無いので pip で入れる。
+# pyserial / spidev はライブラリが無条件に import するが依存宣言されていないため明示する。
+RUN apt-get update \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y python3-pip \
+ && pip3 install --break-system-packages --no-cache-dir \
+    sparkfun-ublox-gps \
+    pyserial \
+    spidev \
+ && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 FROM base AS build
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
   python3-colcon-common-extensions \
