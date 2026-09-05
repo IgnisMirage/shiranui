@@ -1,5 +1,16 @@
 # build method
 
+## ビルドスクリプト
+
+```bash
+# ローカル (colcon)
+./scripts/build.sh
+./scripts/build.sh local --packages-select autonomous_drive
+
+# Docker イメージ
+./scripts/build.sh docker
+```
+
 ## ローカル (colcon)
 
 ```bash
@@ -14,24 +25,16 @@ ros2 launch autonomous_drive autonomous_drive.launch.xml
 Compose ファイルは `compose.yaml` を使用する（`docker-compose.yml` は使わない）。
 
 ```bash
-# ビルド & 起動
-docker compose build sim
+# ローカルでイメージをビルドして起動
+./scripts/build.sh docker
+docker compose up sim
+
+# CI でビルド済みイメージを pull して起動
+docker compose pull sim
 docker compose up sim
 ```
 
 Foxglove Studio で `ws://localhost:8765` に接続し、`/goal_pose` に目標位置を送る。
-
-### 開発用コンテナ
-
-ソースをマウントしてコンテナ内でビルド:
-
-```bash
-docker compose run --rm dev bash
-# コンテナ内
-colcon build --symlink-install
-source install/setup.bash
-ros2 launch autonomous_drive autonomous_drive.launch.xml
-```
 
 ### プランナー切り替え
 
@@ -51,5 +54,15 @@ docker compose run --rm sim ros2 launch autonomous_drive autonomous_drive.launch
 | Target | 用途 |
 |--------|------|
 | `deploy` | ビルド済み sim 起動（compose `sim` サービス） |
-| `devenv` | 開発用シェル（compose `dev` サービス） |
+| `devenv` | 開発用シェル |
 | `build` | ビルドのみ |
+
+## CI/CD
+
+`main` ブランチへの push で GitHub Actions が Docker イメージをビルドし、GHCR に push する。
+
+- Workflow: `.github/workflows/docker.yml`
+- イメージ: `ghcr.io/ignismirage/tukuba2026:latest`
+- タグ: `latest` と commit SHA
+
+初回 pull 前に、GitHub の Package 設定でイメージを Public にするか、`docker login ghcr.io` が必要。
