@@ -5,7 +5,7 @@
     update_rate: 10.0
     obstacle_cost_value: 100
 
-    # siranui/map/map.yaml:
+    # autonomous_drive/map/map.yaml:
     #   origin: [-10, -10, 0], resolution: 0.02, image: map.png (992x992)
     #   free_thresh: 0.196, occupied_thresh: 0.65
     # 通行可能エリアは細い通路のみ。障害物は通路内座標に配置する。

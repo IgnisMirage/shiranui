@@ -3,9 +3,6 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <geometry_msgs/msg/twist.hpp>
-#include <std_msgs/msg/float32.hpp>
-#include <std_msgs/msg/bool.hpp>
-#include <std_msgs/msg/int32.hpp>
 #include <nav_msgs/msg/odometry.hpp>
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <tf2_ros/transform_broadcaster.h>
@@ -80,6 +77,13 @@ enum ODriveControlMode : uint32_t {
     CONTROL_MODE_TORQUE_CONTROL = 1,
     CONTROL_MODE_VELOCITY_CONTROL = 2,
     CONTROL_MODE_POSITION_CONTROL = 3
+};
+
+// 入力モード
+enum ODriveInputMode : uint32_t {
+    INPUT_MODE_INACTIVE = 0,
+    INPUT_MODE_PASSTHROUGH = 1,
+    INPUT_MODE_VEL_RAMP = 2,
 };
 
 class MotorStatus {
@@ -220,54 +224,37 @@ private:
     // robot parameters
     double wheel_base_;       // 車輪間距離 [m]
     double wheel_radius_;     // 車輪半径 [m]
-    double max_velocity_;     // 最大速度 [m/s]
+    double max_velocity_;     // 最大輪速度 [m/s]
     double velocity_timeout_; // 速度コマンドタイムアウト [s]
     double traj_vel_limit_;   // 台形軌道の速度制限 [回転/秒]
+    double left_wheel_sign_;  // 左輪の回転方向 (+1 or -1)
+    double right_wheel_sign_; // 右輪の回転方向 (+1 or -1)
     
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_sub_;
     rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub_;
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
-
-    rclcpp::Publisher<std_msgs::msg::Int32>::SharedPtr left_axis_state_pub_;
-    rclcpp::Publisher<std_msgs::msg::Int32>::SharedPtr right_axis_state_pub_;
-    rclcpp::Publisher<std_msgs::msg::Int32>::SharedPtr left_axis_error_pub_;
-    rclcpp::Publisher<std_msgs::msg::Int32>::SharedPtr right_axis_error_pub_;
-    rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr left_position_pub_;
-    rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr right_position_pub_;
-    rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr left_iq_measured_pub_;
-    rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr right_iq_measured_pub_;
-    rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr left_fet_temp_pub_;
-    rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr right_fet_temp_pub_;
-    rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr left_motor_temp_pub_;
-    rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr right_motor_temp_pub_;
-    rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr bus_voltage_pub_;
-    rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr bus_current_pub_;
-    rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr motor_status_ok_pub_;
     
     rclcpp::Time last_cmd_time_;
     rclcpp::Time last_odom_time_;
-    double current_linear_vel_ = 0.0;
-    double current_angular_vel_ = 0.0;
+    bool cmd_vel_timed_out_ = false;
+    double measured_linear_vel_ = 0.0;
+    double measured_angular_vel_ = 0.0;
     
     double x_position_ = 0.0;
-    double y_position_ = 0.0; 
-    double theta_ ;
-    double left_wheel_position_ = 0.0; 
+    double y_position_ = 0.0;
+    double theta_ = 0.0;
+    double left_wheel_position_ = 0.0;
     double right_wheel_position_ = 0.0;
     
     // モーター状態
     std::map<uint8_t, MotorStatus> motor_status_;
     
-    // 状態監視パラメータ
-    double status_publish_rate_;  // 状態パブリッシュ頻度 [Hz]
-    double temperature_threshold_; // 温度警告閾値 [°C]
-    double voltage_min_threshold_; // 最小電圧閾値 [V]
-    double voltage_max_threshold_; // 最大電圧閾値 [V]
-    
     // メソッド
     bool init_can_interface();
     void cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr msg);
+    void check_cmd_vel_timeout();
     void differential_drive_kinematics(double linear_vel, double angular_vel, double& left_wheel_vel, double& right_wheel_vel);
+    void clamp_wheel_velocities(double& left_wheel_vel, double& right_wheel_vel);
     void send_velocity_command(uint8_t node_id, double velocity);
     void send_axis_state_command(uint8_t node_id, ODriveAxisState state);
     void send_controller_mode_command(uint8_t node_id, ODriveControlMode control_mode, uint32_t input_mode);

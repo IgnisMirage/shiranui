@@ -1,0 +1,14 @@
+.git
+.gitignore
+**/.git
+**/build/
+**/install/
+**/log/
+build/
+install/
+log/
+*.md
+!src/**/README.md
+.cursor
+.vscode
+.devcontainer

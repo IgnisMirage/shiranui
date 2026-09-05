@@ -1,0 +1,16 @@
+services:
+  # 自律走行シミュレーション（Foxglove: http://localhost:8765）
+  sim:
+    build:
+      context: .
+      target: deploy
+    image: tukuba2026:latest
+    network_mode: host
+    environment:
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+      - RMW_IMPLEMENTATION=${RMW_IMPLEMENTATION:-rmw_fastrtps_cpp}
+    command: >
+      ros2 launch autonomous_drive autonomous_drive.launch.xml
+      foxglove:=true
+      lidar_sim:=true
+      safety_limiter:=true

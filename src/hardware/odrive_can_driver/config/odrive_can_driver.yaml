@@ -3,17 +3,24 @@ odrive_can_driver:
   ros__parameters:
     # CAN interface settings
     can_interface: "can0"
-    
+
     # ODrive node IDs
     left_wheel_node_id: 1
     right_wheel_node_id: 2
-    
+
     # Robot physical parameters
     wheel_base: 0.30        # Distance between wheels [m]
     wheel_radius: 0.05      # Wheel radius [m]
-    
+
+    # Wheel direction signs (+1 or -1, depends on motor mounting)
+    left_wheel_sign: 1.0
+    right_wheel_sign: 1.0
+
     # Velocity limits
-    max_velocity: 1.0       # Maximum linear velocity [m/s]
-    
+    max_velocity: 1.0       # Maximum wheel linear velocity [m/s]
+
+    # ODrive controller settings
+    traj_vel_limit: 10.0    # Trajectory velocity limit [rev/s] for VEL_RAMP mode
+
     # Safety settings
-    velocity_timeout: 1.0   # Velocity command timeout [s]
+    velocity_timeout: 1.0   # Stop motors if no cmd_vel received within this period [s]

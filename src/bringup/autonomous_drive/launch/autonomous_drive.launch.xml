@@ -11,10 +11,10 @@
 
   <arg name="a_star" default="true" description="A* グローバルプランナーを起動するか (true/false)"/>
 
-  <arg name="map" default="true" description="map_server で地図を表示するか (true/false)"/>
+  <arg name="map" default="true" description="map_publisher で地図を配信するか (true/false)"/>
   <arg name="lidar_sim" default="true" description="2D LiDAR シミュレータを起動するか (true/false)"/>
   <arg name="safety_limiter" default="true" description="安全監視ノードを起動するか (true/false)"/>
-  <arg name="map_yaml" default="$(find-pkg-share siranui)/map/map.yaml"
+  <arg name="map_yaml" default="$(find-pkg-share autonomous_drive)/map/map.yaml"
        description="読み込む地図の yaml ファイル"/>
 
   <include file="$(find-pkg-share foxglove_bridge)/launch/foxglove_bridge_launch.xml"
@@ -28,7 +28,7 @@
 
   <node pkg="robot_sim" exec="footprint_publisher_node" name="footprint_publisher"
         output="screen">
-    <param from="$(find-pkg-share siranui)/config/footprint_params.yaml"/>
+    <param from="$(find-pkg-share autonomous_drive)/config/footprint_params.yaml"/>
   </node>
 
   <node pkg="robot_sim" exec="map_obstacle_layer_node" name="map_obstacle_layer"
@@ -44,7 +44,7 @@
 
   <node pkg="pointcloud_to_laserscan" exec="laserscan_to_pointcloud_node"
         name="laserscan_to_pointcloud" output="screen" if="$(var lidar_sim)">
-    <param from="$(find-pkg-share siranui)/config/scan_to_pointcloud_params.yaml"/>
+    <param from="$(find-pkg-share autonomous_drive)/config/scan_to_pointcloud_params.yaml"/>
     <remap from="scan_in" to="scan"/>
     <remap from="cloud" to="cloud"/>
   </node>
@@ -56,19 +56,12 @@
     <remap from="footprint" to="footprint"/>
   </node>
 
-  <node pkg="nav2_map_server" exec="map_server" name="map_server" output="screen"
+  <node pkg="autonomous_drive" exec="map_publisher_node" name="map_publisher" output="screen"
         if="$(var map)">
-    <param name="yaml_filename" value="$(var map_yaml)"/>
+    <param name="map_yaml" value="$(var map_yaml)"/>
     <param name="topic_name" value="map"/>
     <param name="frame_id" value="map"/>
-    <param name="use_sim_time" value="false"/>
-  </node>
-
-  <node pkg="nav2_lifecycle_manager" exec="lifecycle_manager" name="lifecycle_manager_map"
-        output="screen" if="$(var map)">
-    <param name="autostart" value="true"/>
-    <param name="node_names" value="['map_server']"/>
-    <param name="use_sim_time" value="false"/>
+    <param name="publish_rate" value="1.0"/>
   </node>
 
   <node pkg="a_star_planner" exec="a_star_component" name="a_star_planner_node"

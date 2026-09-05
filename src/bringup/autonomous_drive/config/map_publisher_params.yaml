@@ -1,0 +1,6 @@
+map_publisher:
+  ros__parameters:
+    map_yaml: ""
+    frame_id: "map"
+    topic_name: "map"
+    publish_rate: 1.0

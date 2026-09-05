@@ -76,8 +76,7 @@ install(DIRECTORY include/
 # Install launch files
 install(DIRECTORY launch
   DESTINATION share/${PROJECT_NAME}
-  FILES_MATCHING PATTERN "*.py"
-  PATTERN "*.xml"
+  FILES_MATCHING PATTERN "*.xml"
 )
 
 # Install config files

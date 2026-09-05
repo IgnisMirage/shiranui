@@ -1,8 +1,7 @@
 #include "odrive_can_driver/odrive_can_driver.hpp"
+#include <algorithm>
+#include <cmath>
 #include <cstring>
-#include <iostream>
-#include <iomanip>
-#include <sstream>
 
 using std::placeholders::_1;
 using namespace std::chrono_literals;
@@ -10,11 +9,8 @@ using namespace std::chrono_literals;
 namespace odrive_can_driver
 {
 
-// MotorStatusクラスの実装
 MotorStatus::MotorStatus()
 {
-    // 数値メンバはヘッダのデフォルトメンバ初期化子で初期化済み。
-    // タイムスタンプのみ現在時刻で初期化する。
     rclcpp::Clock clock;
     last_heartbeat_ = clock.now();
     last_encoder_update_ = clock.now();
@@ -31,7 +27,9 @@ ODriveCANDriver::ODriveCANDriver(const rclcpp::NodeOptions & options)
     this->declare_parameter("wheel_radius", 0.05);   
     this->declare_parameter("max_velocity", 1.0);
     this->declare_parameter("velocity_timeout", 1.0);
-    this->declare_parameter("traj_vel_limit", 10.0); // 台形軌道の速度制限 [回転/秒]
+    this->declare_parameter("traj_vel_limit", 10.0);
+    this->declare_parameter("left_wheel_sign", 1.0);
+    this->declare_parameter("right_wheel_sign", 1.0);
     
     can_interface_ = this->get_parameter("can_interface").as_string();
     left_wheel_node_id_ = this->get_parameter("left_wheel_node_id").as_int();
@@ -41,6 +39,8 @@ ODriveCANDriver::ODriveCANDriver(const rclcpp::NodeOptions & options)
     max_velocity_ = this->get_parameter("max_velocity").as_double();
     velocity_timeout_ = this->get_parameter("velocity_timeout").as_double();
     traj_vel_limit_ = this->get_parameter("traj_vel_limit").as_double();
+    left_wheel_sign_ = this->get_parameter("left_wheel_sign").as_double();
+    right_wheel_sign_ = this->get_parameter("right_wheel_sign").as_double();
     
     if (!init_can_interface()) {
         RCLCPP_ERROR(this->get_logger(), "Failed to initialize CAN interface");
@@ -116,7 +116,7 @@ void ODriveCANDriver::initialize_odrive(uint8_t node_id)
         return;
     }
     std::this_thread::sleep_for(100ms);
-    send_controller_mode_command(node_id, CONTROL_MODE_VELOCITY_CONTROL, 1); // input_mode = 1 (vel_ramp)
+    send_controller_mode_command(node_id, CONTROL_MODE_VELOCITY_CONTROL, INPUT_MODE_VEL_RAMP);
     std::this_thread::sleep_for(100ms);
     send_traj_vel_limit_command(node_id, static_cast<float>(traj_vel_limit_)); // 台形軌道の速度制限 [回転/秒]
     std::this_thread::sleep_for(100ms);
@@ -126,23 +126,45 @@ void ODriveCANDriver::initialize_odrive(uint8_t node_id)
 void ODriveCANDriver::cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr msg)
 {
     last_cmd_time_ = this->now();
-    double linear_vel = std::clamp(msg->linear.x, -max_velocity_, max_velocity_);
+    cmd_vel_timed_out_ = false;
+
+    double linear_vel = msg->linear.x;
     double angular_vel = msg->angular.z;
-    
-    current_linear_vel_ = linear_vel;
-    current_angular_vel_ = angular_vel;
-    
-    // 差動駆動の運動学計算
+
     double left_wheel_vel, right_wheel_vel;
     differential_drive_kinematics(linear_vel, angular_vel, left_wheel_vel, right_wheel_vel);
-    
-    // 車輪速度を回転速度[turns/s]に変換 (ODriveは turns/s で制御)
-    double left_turns_per_sec = left_wheel_vel / (2.0 * M_PI * wheel_radius_);
-    double right_turns_per_sec = right_wheel_vel / (2.0 * M_PI * wheel_radius_);
-    
-    // ODriveに速度コマンドを送信
+    clamp_wheel_velocities(left_wheel_vel, right_wheel_vel);
+
+    double left_turns_per_sec = (left_wheel_vel / (2.0 * M_PI * wheel_radius_)) * left_wheel_sign_;
+    double right_turns_per_sec = (right_wheel_vel / (2.0 * M_PI * wheel_radius_)) * right_wheel_sign_;
+
     send_velocity_command(left_wheel_node_id_, left_turns_per_sec);
     send_velocity_command(right_wheel_node_id_, right_turns_per_sec);
+}
+
+void ODriveCANDriver::check_cmd_vel_timeout()
+{
+    if ((this->now() - last_cmd_time_).seconds() <= velocity_timeout_) {
+        return;
+    }
+
+    if (!cmd_vel_timed_out_) {
+        RCLCPP_WARN(this->get_logger(), "cmd_vel timeout (%.1f s), stopping motors", velocity_timeout_);
+        stop_motors();
+        cmd_vel_timed_out_ = true;
+    }
+}
+
+void ODriveCANDriver::clamp_wheel_velocities(double& left_wheel_vel, double& right_wheel_vel)
+{
+    const double max_wheel_vel = std::max(std::abs(left_wheel_vel), std::abs(right_wheel_vel));
+    if (max_wheel_vel <= max_velocity_) {
+        return;
+    }
+
+    const double scale = max_velocity_ / max_wheel_vel;
+    left_wheel_vel *= scale;
+    right_wheel_vel *= scale;
 }
 
 void ODriveCANDriver::differential_drive_kinematics(double linear_vel, double angular_vel, 
@@ -259,7 +281,22 @@ void ODriveCANDriver::process_can_message(const struct can_frame& frame)
     
     switch (cmd_id) {
         case MSG_ODRIVE_HEARTBEAT:
-            // RCLCPP_DEBUG(this->get_logger(), "Heartbeat from node %d", node_id);
+            if (frame.can_dlc >= 7) {
+                motor_status_[node_id].setAxisError(bytes_to_uint32(&frame.data[0]));
+                motor_status_[node_id].setAxisState(frame.data[4]);
+                motor_status_[node_id].setProcedureResult(frame.data[5]);
+                motor_status_[node_id].setTrajectoryDone(frame.data[6] != 0);
+                motor_status_[node_id].updateHeartbeat();
+
+                if (motor_status_[node_id].hasError()) {
+                    RCLCPP_WARN_THROTTLE(
+                        this->get_logger(), *this->get_clock(), 1000,
+                        "ODrive node %d error: axis_error=0x%08X, state=%u",
+                        node_id,
+                        motor_status_[node_id].getAxisError(),
+                        motor_status_[node_id].getAxisState());
+                }
+            }
             break;
             
         case MSG_GET_ENCODER_ESTIMATES:
@@ -295,7 +332,8 @@ void ODriveCANDriver::request_encoder_estimates(uint8_t node_id)
 
 void ODriveCANDriver::update_odometry()
 {
-    // エンコーダ値をリクエスト
+    check_cmd_vel_timeout();
+
     request_encoder_estimates(left_wheel_node_id_);
     request_encoder_estimates(right_wheel_node_id_);
     
@@ -321,10 +359,11 @@ void ODriveCANDriver::update_odometry()
     left_wheel_position_ = left_status->second.getPositionEstimate();
     right_wheel_position_ = right_status->second.getPositionEstimate();
     
-    double delta_left = left_wheel_position_ - prev_left_pos;
-    double delta_right = right_wheel_position_ - prev_right_pos;    
-    double left_distance = delta_left * wheel_radius_;
-    double right_distance = delta_right * wheel_radius_;
+    const double wheel_circumference = 2.0 * M_PI * wheel_radius_;
+    double delta_left = (left_wheel_position_ - prev_left_pos) * left_wheel_sign_;
+    double delta_right = (right_wheel_position_ - prev_right_pos) * right_wheel_sign_;
+    double left_distance = delta_left * wheel_circumference;
+    double right_distance = delta_right * wheel_circumference;
     
     double delta_distance = (left_distance + right_distance) / 2.0;
     double delta_theta = (right_distance - left_distance) / wheel_base_;
@@ -340,12 +379,9 @@ void ODriveCANDriver::update_odometry()
     while (theta_ > M_PI) theta_ -= 2.0 * M_PI;
     while (theta_ < -M_PI) theta_ += 2.0 * M_PI;
     
-    double linear_velocity = delta_distance / dt;
-    double angular_velocity = delta_theta / dt;
-    
-    current_linear_vel_ = linear_velocity;
-    current_angular_vel_ = angular_velocity;
-    
+    measured_linear_vel_ = delta_distance / dt;
+    measured_angular_vel_ = delta_theta / dt;
+
     publish_odometry();    
     last_odom_time_ = current_time;
 }
@@ -369,9 +405,9 @@ void ODriveCANDriver::publish_odometry()
     odom_msg.pose.pose.orientation.z = q.z();
     odom_msg.pose.pose.orientation.w = q.w();
     
-    odom_msg.twist.twist.linear.x = current_linear_vel_;
+    odom_msg.twist.twist.linear.x = measured_linear_vel_;
     odom_msg.twist.twist.linear.y = 0.0;
-    odom_msg.twist.twist.angular.z = current_angular_vel_;
+    odom_msg.twist.twist.angular.z = measured_angular_vel_;
     
     odom_msg.pose.covariance[0] = 0.1;   // x
     odom_msg.pose.covariance[7] = 0.1;   // y
@@ -424,8 +460,6 @@ uint32_t ODriveCANDriver::bytes_to_uint32(const uint8_t* bytes)
     return value;
 }
 //#############################################################################
-
-
 }  // namespace odrive_can_driver
 
 #include "rclcpp_components/register_node_macro.hpp"
