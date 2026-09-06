@@ -20,26 +20,31 @@ source install/setup.bash
 ros2 launch autonomous_drive autonomous_drive.launch.xml
 ```
 
-## Docker（自律走行シミュレーション）
+## Docker（本番起動）
 
 Compose ファイルは `compose.yaml` を使用する（`docker-compose.yml` は使わない）。
+GHCR からイメージを pull して起動する（ローカルビルドなし）。
 
 ```bash
-# ローカルでイメージをビルドして起動
-./scripts/build.sh docker
-docker compose up sim
-
-# CI でビルド済みイメージを pull して起動
-docker compose pull sim
-docker compose up sim
+docker compose pull
+docker compose up
 ```
 
 Foxglove Studio で `ws://localhost:8765` に接続し、`/goal_pose` に目標位置を送る。
 
-### プランナー切り替え
+launch のオプション（foxglove / lidar_sim / safety_limiter 等）は `autonomous_drive.launch.xml` のデフォルト（true）を使用する。
+
+### ローカルでイメージをビルドする場合（開発・CI 用）
 
 ```bash
-docker compose run --rm sim ros2 launch autonomous_drive autonomous_drive.launch.xml planner:=stanley
+./scripts/build.sh docker
+```
+
+### プランナー切り替え（必要なときだけ）
+
+```bash
+docker compose run --rm shiranui \
+  ros2 launch autonomous_drive autonomous_drive.launch.xml planner:=stanley
 ```
 
 ### 環境変数
@@ -53,7 +58,7 @@ docker compose run --rm sim ros2 launch autonomous_drive autonomous_drive.launch
 
 | Target | 用途 |
 |--------|------|
-| `deploy` | ビルド済み sim 起動（compose `sim` サービス） |
+| `deploy` | 本番用イメージ（compose `shiranui` サービス） |
 | `devenv` | 開発用シェル |
 | `build` | ビルドのみ |
 
@@ -86,5 +91,5 @@ docker pull ghcr.io/ignismirage/shiranui:latest
 
 **C. そもそもイメージが無い場合**
 
-https://github.com/IgnisMirage/tukuba2026/actions の Docker workflow が成功しているか確認する。
+https://github.com/IgnisMirage/shiranui/actions の Docker workflow が成功しているか確認する。
 失敗している場合は `./scripts/build.sh docker` でローカルビルドする。
