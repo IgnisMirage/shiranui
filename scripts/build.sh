@@ -4,7 +4,7 @@ set -eo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-IMAGE_NAME="${IMAGE_NAME:-ghcr.io/ignismirage/tukuba2026:latest}"
+IMAGE_NAME="${IMAGE_NAME:-ghcr.io/ignismirage/shiranui:latest}"
 DOCKER_TARGET="${DOCKER_TARGET:-deploy}"
 ROS_SETUP="${ROS_SETUP:-/opt/ros/jazzy/setup.bash}"
 
@@ -22,13 +22,13 @@ Local options:
 
 Docker options:
   --no-cache    Build without Docker cache
-  --tag <name>  Image tag (default: ghcr.io/ignismirage/tukuba2026:latest)
+  --tag <name>  Image tag (default: ghcr.io/ignismirage/shiranui:latest)
 
 Examples:
   scripts/build.sh
   scripts/build.sh local --packages-select autonomous_drive
   scripts/build.sh docker
-  scripts/build.sh docker --tag tukuba2026:dev
+  scripts/build.sh docker --tag shiranui:dev
 EOF
 }
 
