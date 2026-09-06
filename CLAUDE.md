@@ -79,7 +79,9 @@ docker compose run --rm shiranui \
 docker pull ghcr.io/ignismirage/shiranui:latest
 ```
 
-**B. `unauthorized` が出る場合（Private のまま）**
+**B. `unauthorized` / `denied` が出る場合（Private のまま）**
+
+Package が Private のときに出る。PAT でログインしてから pull する。
 
 1. https://github.com/settings/tokens/new で PAT を作成（権限: `read:packages`）
 2. ログインして pull:
@@ -89,7 +91,13 @@ echo <YOUR_GITHUB_PAT> | docker login ghcr.io -u IgnisMirage --password-stdin
 docker pull ghcr.io/ignismirage/shiranui:latest
 ```
 
+`-u` は GitHub ユーザー名（`IgnisMirage`）。Raspberry Pi 上でも同じ手順。
+
 **C. そもそもイメージが無い場合**
 
 https://github.com/IgnisMirage/shiranui/actions の Docker workflow が成功しているか確認する。
 失敗している場合は `./scripts/build.sh docker` でローカルビルドする。
+
+**D. Raspberry Pi (ARM64)**
+
+CI は `linux/arm64` 向けにもビルドする。古いイメージしか無い場合は CI 再実行後に pull し直す。
