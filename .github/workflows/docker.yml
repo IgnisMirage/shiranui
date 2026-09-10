@@ -58,11 +58,16 @@ jobs:
           cache-to: type=gha,mode=max
           provenance: false
 
+      # Best effort: GITHUB_TOKEN cannot change package visibility for a
+      # user-owned package (/user/packages returns 404), so a failure here
+      # must not fail the build. Set the package to Public once from the
+      # GitHub Packages settings page if this step cannot do it.
       - name: Make package public
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          set -euo pipefail
+          set -uo pipefail
           owner="${{ github.repository_owner }}"
           package="shiranui"
 
@@ -74,4 +79,4 @@ jobs:
             gh api --method PATCH \
               "/user/packages/container/${package}/visibility" \
               -f visibility=public
-          fi
+          fi || echo "::warning::Could not set package visibility to public; set it manually in the GitHub Packages settings."
