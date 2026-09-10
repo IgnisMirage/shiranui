@@ -12,42 +12,64 @@
   <arg name="a_star" default="true" description="A* グローバルプランナーを起動するか (true/false)"/>
 
   <arg name="map" default="true" description="map_publisher で地図を配信するか (true/false)"/>
-  <arg name="lidar_sim" default="true" description="2D LiDAR シミュレータを起動するか (true/false)"/>
   <arg name="safety_limiter" default="true" description="安全監視ノードを起動するか (true/false)"/>
   <arg name="map_yaml" default="$(find-pkg-share autonomous_drive)/map/map.yaml"
        description="読み込む地図の yaml ファイル"/>
+
+  <arg name="odrive_can_driver" default="true" description="ODrive CAN Driver を起動するか (true/false)"/>
+  <arg name="can_interface" default="can0" description="CAN interface name"/>
+  <arg name="left_wheel_node_id" default="1" description="Left wheel ODrive node ID"/>
+  <arg name="right_wheel_node_id" default="2" description="Right wheel ODrive node ID"/>
+
+  <arg name="tg15_driver" default="true" description="TG15 (2D LiDAR) Driver を起動するか (true/false)"/>
+  <arg name="tg15_port" default="/dev/ttyUSB0" description="TG15 のシリアルポート"/>
+  <arg name="tg15_frame_id" default="laser_frame" description="TG15 の LaserScan フレーム ID"/>
+
+  <arg name="mid360_driver" default="true" description="Livox Mid-360 (3D LiDAR) Driver を起動するか (true/false)"/>
+  <arg name="mid360_host_ip" default="192.168.1.15" description="Mid-360 との通信に使うホスト側 IP"/>
+  <arg name="mid360_lidar_ip" default="192.168.1.125" description="Mid-360 本体の IP"/>
+  <arg name="mid360_points_topic" default="/mid360/points" description="Mid-360 の PointCloud2 出力トピック"/>
+  <arg name="mid360_packet_topic" default="/mid360/packet" description="Mid-360 の生パケット出力トピック"/>
+  <arg name="mid360_imu_topic" default="/mid360/imu" description="Mid-360 の IMU 出力トピック"/>
+
+  <arg name="joy" default="true" description="ジョイスティック入力 (joy_node / joy_translate) を起動するか (true/false)"/>
+  <arg name="joy_device_id" default="0" description="使用するジョイスティックのデバイス ID"/>
+  <arg name="joy_deadzone" default="0.05" description="joy_node のデッドゾーン"/>
 
   <include file="$(find-pkg-share foxglove_bridge)/launch/foxglove_bridge_launch.xml"
            if="$(var foxglove)">
     <arg name="port" value="$(var foxglove_port)"/>
   </include>
 
-  <node pkg="robot_sim" exec="cmd_vel_to_tf_node" name="cmd_vel_to_tf" output="screen">
-    <param from="$(find-pkg-share robot_sim)/config/robot_sim_params.yaml"/>
+  <include file="$(find-pkg-share odrive_can_driver)/launch/odrive_can_driver.launch.xml"
+           if="$(var odrive_can_driver)">
+    <arg name="can_interface" value="$(var can_interface)"/>
+    <arg name="left_wheel_node_id" value="$(var left_wheel_node_id)"/>
+    <arg name="right_wheel_node_id" value="$(var right_wheel_node_id)"/>
+  </include>
+
+  <include file="$(find-pkg-share tg15_driver)/launch/tg15_driver.launch.xml"
+           if="$(var tg15_driver)">
+    <arg name="port" value="$(var tg15_port)"/>
+    <arg name="frame_id" value="$(var tg15_frame_id)"/>
+  </include>
+
+  <include file="$(find-pkg-share mid360_driver)/launch/mid360.launch.xml"
+           if="$(var mid360_driver)">
+    <arg name="host_ip" value="$(var mid360_host_ip)"/>
+    <arg name="lidar_ip" value="$(var mid360_lidar_ip)"/>
+    <arg name="points_topic" value="$(var mid360_points_topic)"/>
+    <arg name="packet_topic" value="$(var mid360_packet_topic)"/>
+    <arg name="imu_topic" value="$(var mid360_imu_topic)"/>
+  </include>
+
+  <node pkg="joy" exec="joy_node" name="joy_node" output="screen" if="$(var joy)">
+    <param name="device_id" value="$(var joy_device_id)"/>
+    <param name="deadzone" value="$(var joy_deadzone)"/>
   </node>
 
-  <node pkg="robot_sim" exec="footprint_publisher_node" name="footprint_publisher"
-        output="screen">
-    <param from="$(find-pkg-share autonomous_drive)/config/footprint_params.yaml"/>
-  </node>
-
-  <node pkg="robot_sim" exec="map_obstacle_layer_node" name="map_obstacle_layer"
-        output="screen" if="$(var map)">
-    <param from="$(find-pkg-share robot_sim)/config/map_obstacle_layer_params.yaml"/>
-  </node>
-
-  <node pkg="robot_sim" exec="lidar_sim_node" name="lidar_sim" output="screen"
-        if="$(var lidar_sim)">
-    <param from="$(find-pkg-share robot_sim)/config/lidar_sim_params.yaml"/>
-    <remap from="map" to="map_with_obstacles"/>
-  </node>
-
-  <node pkg="pointcloud_to_laserscan" exec="laserscan_to_pointcloud_node"
-        name="laserscan_to_pointcloud" output="screen" if="$(var lidar_sim)">
-    <param from="$(find-pkg-share autonomous_drive)/config/scan_to_pointcloud_params.yaml"/>
-    <remap from="scan_in" to="scan"/>
-    <remap from="cloud" to="cloud"/>
-  </node>
+  <node pkg="joy_translate" exec="joy_translate_node" name="joy_translate" output="screen"
+        if="$(var joy)"/>
 
   <node pkg="safety_limiter" exec="safety_limiter" name="safety_limiter" output="screen"
         if="$(var safety_limiter)">

@@ -3,7 +3,7 @@
 <package format="3">
   <name>autonomous_drive</name>
   <version>0.0.0</version>
-  <description>自律走行の bringup パッケージ。シミュレータ(robot_sim)と選択式プランナーを起動する。</description>
+  <description>自律走行の bringup パッケージ。各種ハードウェアドライバと選択式プランナーを起動する。</description>
   <maintainer email="arduino6110@gmail.com">ramune</maintainer>
   <license>Apache-2.0</license>
 
@@ -14,14 +14,17 @@
   <build_depend>libyaml-cpp-dev</build_depend>
   <build_depend>libpng-dev</build_depend>
 
-  <exec_depend>robot_sim</exec_depend>
   <exec_depend>pure_pursuit_planner</exec_depend>
   <exec_depend>stanley_planner</exec_depend>
   <exec_depend>mppi_planner</exec_depend>
   <exec_depend>a_star_planner</exec_depend>
   <exec_depend>foxglove_bridge</exec_depend>
-  <exec_depend>pointcloud_to_laserscan</exec_depend>
   <exec_depend>safety_limiter</exec_depend>
+  <exec_depend>odrive_can_driver</exec_depend>
+  <exec_depend>tg15_driver</exec_depend>
+  <exec_depend>mid360_driver</exec_depend>
+  <exec_depend>joy</exec_depend>
+  <exec_depend>joy_translate</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
