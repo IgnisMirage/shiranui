@@ -17,7 +17,7 @@
        description="読み込む地図の yaml ファイル"/>
 
   <arg name="odrive_can_driver" default="true" description="ODrive CAN Driver を起動するか (true/false)"/>
-  <arg name="can_interface" default="can0" description="CAN interface name"/>
+  <arg name="can_interface" default="can1" description="CAN interface name"/>
   <arg name="left_wheel_node_id" default="1" description="Left wheel ODrive node ID"/>
   <arg name="right_wheel_node_id" default="2" description="Right wheel ODrive node ID"/>
 

@@ -20,7 +20,7 @@ MotorStatus::MotorStatus()
 ODriveCANDriver::ODriveCANDriver(const rclcpp::NodeOptions & options)
 : Node("odrive_can_driver", options)
 {
-    this->declare_parameter("can_interface", "can0");
+    this->declare_parameter("can_interface", "can1");
     this->declare_parameter("left_wheel_node_id", 1);
     this->declare_parameter("right_wheel_node_id", 2);
     this->declare_parameter("wheel_base", 0.3);      

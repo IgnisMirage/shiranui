@@ -2,7 +2,7 @@
 odrive_can_driver:
   ros__parameters:
     # CAN interface settings
-    can_interface: "can0"
+    can_interface: "can1"
 
     # ODrive node IDs
     left_wheel_node_id: 1
