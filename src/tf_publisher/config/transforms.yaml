@@ -1,6 +1,9 @@
 transforms:
+  # map -> odom は本来SLAM/localizationノードが動的に発行するべきだが、
+  # 現状それが無いため恒等変換で固定する。odom -> base_footprint は
+  # odrive_can_driver がオドメトリから動的に発行する。
   - parent_frame: "map"
-    child_frame: "base_footprint"
+    child_frame: "odom"
     translation:
       x: 0.0
       y: 0.0
@@ -36,7 +39,7 @@ transforms:
       yaw: 0.0
 
   - parent_frame: "base_link"
-    child_frame: "lidar_frame"
+    child_frame: "mid360"
     translation:
       x: 0.0
       y: 0.0
