@@ -38,7 +38,7 @@ MPPI::~MPPI(){}
 void MPPI::setParameters()
 {
     control_frequency_ = declare_parameter<double>("control_frequency", 20.0);
-    base_frame_id_ =  declare_parameter<std::string>("base_frame_id", "base_footprint");
+    base_frame_id_ =  declare_parameter<std::string>("base_frame_id", "base_link");
     global_frame_id_ = declare_parameter<std::string>("global_frame_id", "map");
     enable_optical_paths_visualization_ = declare_parameter<bool>("enable_optical_paths_visualization", true);
     enable_sampled_paths_visualization_ = declare_parameter<bool>("enable_sampled_paths_visualization", false);

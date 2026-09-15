@@ -420,7 +420,7 @@ void ODriveCANDriver::publish_odometry()
     geometry_msgs::msg::TransformStamped transform;
     transform.header.stamp = current_time;
     transform.header.frame_id = "odom";
-    transform.child_frame_id = "base_footprint";
+    transform.child_frame_id = "base_link";
     
     transform.transform.translation.x = x_position_;
     transform.transform.translation.y = y_position_;
