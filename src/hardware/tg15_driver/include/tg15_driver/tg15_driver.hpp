@@ -81,6 +81,10 @@ private:
   bool read_exact(uint8_t * buf, size_t len, int timeout_ms);
   void flush_input();
 
+  // 接続確立（シリアルオープン〜スキャン開始まで）。USB切断からの
+  // 再接続時にも使うため、失敗しても running_ を落とさずリトライできるようにする
+  bool connect_and_start_scan();
+
   // プロトコル処理
   bool start_scan();
   void stop_scan();

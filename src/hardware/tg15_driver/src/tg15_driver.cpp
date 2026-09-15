@@ -56,9 +56,18 @@ TG15Driver::TG15Driver(const rclcpp::NodeOptions & options)
   stop_service_ = this->create_service<std_srvs::srv::Empty>(
     "stop_scan", std::bind(&TG15Driver::on_stop_scan, this, _1, _2));
 
+  // 初回接続に失敗しても（USBデバイスがまだ列挙中など）ノードは起動しておき、
+  // scan_loop 内でリトライする。running_ は先に立てておく。
+  running_ = true;
+  scan_thread_ = std::thread(&TG15Driver::scan_loop, this);
+}
+
+// シリアルオープン〜スキャン開始までの接続シーケンス。
+// 初回接続時と、USB切断からの再接続時の両方で使う。
+bool TG15Driver::connect_and_start_scan()
+{
   if (!open_serial()) {
-    RCLCPP_ERROR(this->get_logger(), "Failed to open serial port %s", port_.c_str());
-    return;
+    return false;
   }
 
   // スキャンモード中は他コマンドを受け付けないため（マニュアル4章）、
@@ -73,11 +82,10 @@ TG15Driver::TG15Driver(const rclcpp::NodeOptions & options)
 
   if (!start_scan()) {
     RCLCPP_ERROR(this->get_logger(), "Failed to start scan");
-    return;
+    close_serial();
+    return false;
   }
-
-  running_ = true;
-  scan_thread_ = std::thread(&TG15Driver::scan_loop, this);
+  return true;
 }
 
 TG15Driver::~TG15Driver()
@@ -169,7 +177,10 @@ bool TG15Driver::read_exact(uint8_t * buf, size_t len, int timeout_ms)
       return false;  // タイムアウトまたはエラー
     }
     ssize_t n = read(serial_fd_, buf + total, len - total);
-    if (n < 0) {
+    if (n <= 0) {
+      // n==0 はデバイス切断時のEOFを意味する。select()はハングアップしたfdを
+      // 即座にreadableとして返し続けるため、n<0のみを見ているとここで
+      // スリープ無しのビジーループに陥りCPUを使い切ってしまう。
       return false;
     }
     total += static_cast<size_t>(n);
@@ -387,16 +398,39 @@ void TG15Driver::stop_scan()
 
 void TG15Driver::scan_loop()
 {
+  // USB切断などで parse_packet が連続失敗し続けた場合にデバイス切断と
+  // みなして再接続する。1回の失敗で1ms待つので、この回数はおおよその
+  // 無応答時間 [ms] に相当する。
+  constexpr int kMaxConsecutiveFailures = 500;
+  int consecutive_failures = 0;
+
   while (running_) {
     if (!scanning_) {
-      std::this_thread::sleep_for(100ms);
+      // 未接続、または再接続待ち。1秒間隔でオープン〜スキャン開始を試みる
+      if (!connect_and_start_scan()) {
+        std::this_thread::sleep_for(1s);
+      }
+      consecutive_failures = 0;
       continue;
     }
-    if (!parse_packet()) {
-      // 同期喪失などは parse_packet 内で処理するため、ここでは軽く待つのみ
-      std::this_thread::sleep_for(1ms);
+    if (parse_packet()) {
+      consecutive_failures = 0;
+      continue;
+    }
+
+    // 同期喪失などは parse_packet 内で処理するため、ここでは軽く待つのみ
+    std::this_thread::sleep_for(1ms);
+    if (++consecutive_failures >= kMaxConsecutiveFailures) {
+      RCLCPP_WARN(this->get_logger(),
+        "No valid data for %d consecutive reads, assuming %s disconnected. Reconnecting...",
+        consecutive_failures, port_.c_str());
+      scanning_ = false;
+      close_serial();
+      revolution_points_.clear();
+      consecutive_failures = 0;
     }
   }
+  close_serial();
 }
 
 // 点群パケット1個を読み取って解釈する
