@@ -1,0 +1,8 @@
+<launch>
+  <arg name="transforms_file" default="$(find-pkg-share tf_publisher)/config/transforms.yaml"
+       description="Path to transforms configuration file"/>
+
+  <node pkg="tf_publisher" exec="tf_publisher_node" name="tf_publisher" output="screen">
+    <param name="transforms_file" value="$(var transforms_file)"/>
+  </node>
+</launch>

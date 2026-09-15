@@ -1,0 +1,60 @@
+transforms:
+  - parent_frame: "map"
+    child_frame: "base_footprint"
+    translation:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+    rotation:
+      type: "euler"
+      roll: 0.0
+      pitch: 0.0
+      yaw: 0.0
+
+  - parent_frame: "base_footprint"
+    child_frame: "base_link"
+    translation:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+    rotation:
+      type: "euler"
+      roll: 0.0
+      pitch: 0.0
+      yaw: 0.0
+
+  - parent_frame: "base_link"
+    child_frame: "laser_frame"
+    translation:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+    rotation:
+      type: "euler"
+      roll: 0.0
+      pitch: 0.0
+      yaw: 0.0
+
+  - parent_frame: "base_link"
+    child_frame: "lidar_frame"
+    translation:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+    rotation:
+      type: "euler"
+      roll: 0.0
+      pitch: 0.0
+      yaw: 0.0
+
+  - parent_frame: "base_link"
+    child_frame: "imu_link"
+    translation:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+    rotation:
+      type: "euler"
+      roll: 0.0
+      pitch: 0.0
+      yaw: 0.0

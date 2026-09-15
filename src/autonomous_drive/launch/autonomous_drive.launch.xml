@@ -36,6 +36,15 @@
   <arg name="joy_device_id" default="0" description="使用するジョイスティックのデバイス ID"/>
   <arg name="joy_deadzone" default="0.05" description="joy_node のデッドゾーン"/>
 
+  <arg name="tf_publisher" default="true" description="TF Publisher を起動するか (true/false)"/>
+  <arg name="transforms_file" default="$(find-pkg-share tf_publisher)/config/transforms.yaml"
+       description="TF の定義ファイル"/>
+
+  <include file="$(find-pkg-share tf_publisher)/launch/tf_publisher.launch.xml"
+           if="$(var tf_publisher)">
+    <arg name="transforms_file" value="$(var transforms_file)"/>
+  </include>
+
   <include file="$(find-pkg-share foxglove_bridge)/launch/foxglove_bridge_launch.xml"
            if="$(var foxglove)">
     <arg name="port" value="$(var foxglove_port)"/>
