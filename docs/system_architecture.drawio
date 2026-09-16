@@ -1,0 +1,219 @@
+<mxfile host="app.diagrams.net" agent="Claude Code" version="24.7.17" type="device">
+  <diagram id="shiranui-system-architecture" name="システム構成図">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="t_title" value="shiranui システム構成図（autonomous_drive.launch.xml 既定構成）" style="text;html=1;align=left;verticalAlign=middle;fontSize=22;fontStyle=1;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="40" y="-5" width="900" height="40" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="sec1" value="① オペレータ / 外部インタフェース" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#d0d0d0;verticalAlign=top;align=left;spacingLeft=12;spacingTop=6;fontSize=14;fontStyle=1;fontColor=#808080;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="1520" height="250" as="geometry"/>
+        </mxCell>
+        <mxCell id="sec2" value="② ハードウェア（Raspberry Pi 接続機器）" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#d0d0d0;verticalAlign=top;align=left;spacingLeft=12;spacingTop=6;fontSize=14;fontStyle=1;fontColor=#808080;" vertex="1" parent="1">
+          <mxGeometry x="40" y="310" width="1520" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="sec3" value="③ ドライバ層　src/hardware, src/localization" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#d0d0d0;verticalAlign=top;align=left;spacingLeft=12;spacingTop=6;fontSize=14;fontStyle=1;fontColor=#808080;" vertex="1" parent="1">
+          <mxGeometry x="40" y="460" width="1520" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="sec4" value="④ 地図 / TF　src/autonomous_drive, src/tf_publisher" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#d0d0d0;verticalAlign=top;align=left;spacingLeft=12;spacingTop=6;fontSize=14;fontStyle=1;fontColor=#808080;" vertex="1" parent="1">
+          <mxGeometry x="40" y="620" width="1520" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="sec5" value="⑤ プランナ層　src/plannner" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#d0d0d0;verticalAlign=top;align=left;spacingLeft=12;spacingTop=6;fontSize=14;fontStyle=1;fontColor=#808080;" vertex="1" parent="1">
+          <mxGeometry x="40" y="780" width="1520" height="240" as="geometry"/>
+        </mxCell>
+        <mxCell id="sec6" value="⑥ 安全層　src/perception" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#d0d0d0;verticalAlign=top;align=left;spacingLeft=12;spacingTop=6;fontSize=14;fontStyle=1;fontColor=#808080;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1040" width="1520" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="n_pad" value="ゲームパッド&#xa;/dev/input/js0" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="80" y="80" width="220" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="n_joynode" value="joy_node&#xa;(joy pkg)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="80" y="180" width="120" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="n_joytrans" value="joy_translate&#xa;/manual_cmd_vel・/manual_mode・/auto_mode を発行&#xa;※ 購読ノードが無く未接続" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#999999;dashed=1;fontSize=12;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="220" y="180" width="300" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="n_fox" value="Foxglove Studio&#xa;可視化 / 目標位置の指示" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="940" y="80" width="280" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="n_bridge" value="foxglove_bridge&#xa;全トピック・TF を WebSocket でブリッジ&#xa;port: 8765" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="940" y="180" width="280" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="n_mid_hw" value="Livox Mid-360（3D LiDAR）&#xa;192.168.1.125 / Ethernet" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="80" y="340" width="240" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="n_tg_hw" value="TG15（2D LiDAR）&#xa;/dev/ttyUSB0" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="360" y="340" width="240" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="n_zed_hw" value="ZED-F9R（GNSS / Dead Reckoning）&#xa;/dev/ttyAMA10" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#999999;dashed=1;fontSize=12;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="640" y="340" width="240" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="n_odrive_hw" value="ODrive ×2 + 左右駆動輪&#xa;CAN node ID 1 / 2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="340" width="280" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="n_mid_drv" value="mid360_driver&#xa;/mid360/points・/mid360/imu・/mid360/packet&#xa;frame_id: mid360" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="80" y="490" width="240" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="n_tg_drv" value="tg15_driver&#xa;/scan (LaserScan)&#xa;frame_id: laser_frame" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="360" y="490" width="240" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="n_zed_drv" value="zed_f9r_node&#xa;/fix・/fix_velocity・/imu/data&#xa;※ 本 launch では未起動" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#999999;dashed=1;fontSize=12;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="640" y="490" width="240" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="n_odrive_drv" value="odrive_can_driver&#xa;/cmd_vel を購読 → 左右輪速度 (CAN)&#xa;/odom 発行 + TF odom→base_link" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="490" width="280" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="n_map_pub" value="map_publisher&#xa;map.yaml / map.png → /map&#xa;(OccupancyGrid, TransientLocal)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="80" y="650" width="280" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="n_tf_pub" value="tf_publisher&#xa;静的TF: map→odom,&#xa;base_link→laser_frame / mid360 / imu_link" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="400" y="650" width="280" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="n_footprint" value="/footprint (PolygonStamped) の発行元&#xa;robot_sim / footprint_publisher&#xa;※ 本 launch では未起動" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#999999;dashed=1;fontSize=12;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="720" y="650" width="300" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="g_local" value="ローカルプランナ（planner:= 引数で 1 つだけ起動 / 既定: pure_pursuit）" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f0f7ee;strokeColor=#82b366;dashed=1;verticalAlign=top;spacingTop=6;fontSize=12;fontColor=#5d8a4a;" vertex="1" parent="1">
+          <mxGeometry x="380" y="810" width="620" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="n_pp" value="pure_pursuit_planner&#xa;/path 購読&#xa;/auto_cmd_vel 発行" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="400" y="880" width="180" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="n_st" value="stanley_planner&#xa;/path 購読&#xa;/auto_cmd_vel 発行" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="600" y="880" width="180" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="n_mppi" value="mppi_planner&#xa;/reference_path・/local_costmap 購読&#xa;/cmd_vel を直接発行" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#999999;dashed=1;fontSize=12;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="800" y="880" width="180" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="n_astar" value="a_star_planner（グローバル）&#xa;/goal_pose・地図・/footprint を購読&#xa;/path・/raw_path を発行（TransientLocal）" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="850" width="320" height="110" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="n_safety" value="safety_limiter&#xa;/cmd_vel_in + 点群 + /footprint から将来軌道を予測し減速・停止&#xa;→ /cmd_vel・/collision・/future_motion_prediction・/cloud_in_map" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="560" y="1060" width="360" height="110" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e_pad_joy" value="/dev/input/js0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_pad" target="n_joynode">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_joy_trans" value="/joy (sensor_msgs/Joy)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_joynode" target="n_joytrans">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_fox_bridge" value="WebSocket ws://localhost:8765" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;labelBackgroundColor=#ffffff;startArrow=classic;startFill=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_fox" target="n_bridge">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e_mid_hw_drv" value="UDP 56201 / 56301 / 56401" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_mid_hw" target="n_mid_drv">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_tg_hw_drv" value="USB シリアル 512000bps" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.3;exitY=1;exitDx=0;exitDy=0;entryX=0.3;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_tg_hw" target="n_tg_drv">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_zed_hw_drv" value="UART" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;strokeColor=#999999;fontColor=#777777;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_zed_hw" target="n_zed_drv">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_odrive" value="CAN (can0)&#xa;速度指令 / エンコーダ・Heartbeat" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;labelBackgroundColor=#ffffff;startArrow=classic;startFill=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_odrive_drv" target="n_odrive_hw">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e_scan_fox" value="/scan ほか全トピック・TF" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_tg_drv" target="n_bridge">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="540" y="450"/>
+              <mxPoint x="1080" y="450"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e_goal" value="/goal_pose (PoseStamped)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.2;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_bridge" target="n_astar">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1150" y="820"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e_map_astar" value="/map (OccupancyGrid)&#xa;※ a_star は /map_with_obstacles を購読するため未接続" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;strokeColor=#b85450;fontColor=#b85450;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.44;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_map_pub" target="n_astar">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="220" y="790"/>
+              <mxPoint x="1300" y="790"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_fp_astar" value="/footprint" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;strokeColor=#999999;fontColor=#777777;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.8;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_footprint" target="n_astar">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="960" y="805"/>
+              <mxPoint x="1400" y="805"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_fp_safety" value="/footprint" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;strokeColor=#999999;fontColor=#777777;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.45;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_footprint" target="n_safety">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1040" y="690"/>
+              <mxPoint x="1040" y="1110"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e_points_safety" value="/mid360/points (PointCloud2)&#xa;※ safety_limiter は cloud を購読。remap が無く未接続" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;strokeColor=#b85450;fontColor=#b85450;fontSize=10;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;verticalAlign=bottom;" edge="1" parent="1" source="n_mid_drv" target="n_safety">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="60" y="530"/>
+              <mxPoint x="60" y="1115"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e_path" value="/path (nav_msgs/Path, TransientLocal)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_astar" target="g_local">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e_pp_safety" value="/auto_cmd_vel →(remap) /cmd_vel_in (Twist)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.2;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_pp" target="n_safety">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_st_safety" value="planner:=stanley 選択時" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.55;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_st" target="n_safety">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e_mppi_odrive" value="/cmd_vel（safety_limiter を経由しない）" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;strokeColor=#999999;fontColor=#777777;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_mppi" target="n_odrive_drv">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1120" y="925"/>
+              <mxPoint x="1120" y="550"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e_cmdvel" value="/cmd_vel (Twist)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#b85450;fontColor=#b85450;fontSize=11;labelBackgroundColor=#ffffff;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_safety" target="n_odrive_drv">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1520" y="1088"/>
+              <mxPoint x="1520" y="530"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="b_legend" value="&lt;b&gt;凡例&lt;/b&gt;&lt;br&gt;&lt;br&gt;■ 橙 … ハードウェア&lt;br&gt;■ 青 … ドライバノード&lt;br&gt;■ 紫 … 地図 / TF / 可視化&lt;br&gt;■ 緑 … プランナ&lt;br&gt;■ 赤 … 安全監視&lt;br&gt;&lt;br&gt;実線 … 実際に接続されているトピック / 通信&lt;br&gt;灰の破線 … 本 launch では未起動 / 発行元が無い&lt;br&gt;赤の破線 … トピック名が一致せず未接続" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b0b0b0;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1220" width="480" height="250" as="geometry"/>
+        </mxCell>
+        <mxCell id="b_tf" value="&lt;b&gt;TF ツリー&lt;/b&gt;&lt;br&gt;&lt;br&gt;map&lt;br&gt;&amp;nbsp;└ odom　← tf_publisher（恒等変換・静的）&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;└ base_link　← odrive_can_driver（オドメトリから動的発行）&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;├ laser_frame　← tf_publisher（TG15）&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;├ mid360　← tf_publisher（Livox Mid-360）&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;└ imu_link　← tf_publisher&lt;br&gt;&lt;br&gt;自己位置推定ノードが未起動のため map→odom は恒等変換で固定。&lt;br&gt;a_star / 各プランナ / safety_limiter は TF で自己位置を取得する。" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b0b0b0;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="560" y="1220" width="480" height="250" as="geometry"/>
+        </mxCell>
+        <mxCell id="b_notes" value="&lt;b&gt;現状の未接続・注意点&lt;/b&gt;&lt;br&gt;&lt;br&gt;1. safety_limiter は cloud を購読するが mid360_driver は /mid360/points に発行。remap が無く障害物入力が届かない。&lt;br&gt;2. a_star_planner は /map_with_obstacles を購読するが、本 launch が起動するのは map_publisher の /map のみ。&lt;br&gt;3. /footprint の発行ノード（robot_sim/footprint_publisher）が本 launch に含まれない。&lt;br&gt;4. joy_translate の出力を購読するノードが無く、手動走行は未接続。&lt;br&gt;5. mppi_planner は /reference_path・/local_costmap を購読し /cmd_vel を直接発行するため、a_star や safety_limiter とは繋がらない。&lt;br&gt;6. src/localization（mcl_3d, zed_f9r）と src/simulater（robot_sim）は本 launch では未起動。" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="1220" width="480" height="250" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
