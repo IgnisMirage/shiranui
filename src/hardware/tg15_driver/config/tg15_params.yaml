@@ -1,7 +1,7 @@
 /**:
   tg15_driver:
     ros__parameters:
-      port: "/dev/ttyUSB0"        # シリアルポートデバイス
+      port: "/dev/ttyAMA10"        # シリアルポートデバイス
       baudrate: 512000            # ボーレート（TG15は512000固定）
       frame_id: "laser_frame"     # スキャンのフレームID
       range_min: 0.05             # 最小距離 [m]

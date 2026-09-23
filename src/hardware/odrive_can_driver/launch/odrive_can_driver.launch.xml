@@ -3,6 +3,8 @@
   <arg name="can_interface" default="can0" description="CAN interface name"/>
   <arg name="left_wheel_node_id" default="1" description="Left wheel ODrive node ID"/>
   <arg name="right_wheel_node_id" default="2" description="Right wheel ODrive node ID"/>
+  <arg name="left_wheel_sign" default="1.0" description="Left wheel direction sign (+1/-1)"/>
+  <arg name="right_wheel_sign" default="-1.0" description="Right wheel direction sign (+1/-1)"/>
 
   <!-- ODrive CAN Driverノード -->
   <node pkg="odrive_can_driver" exec="odrive_can_driver_node" name="odrive_can_driver" output="screen">
@@ -12,5 +14,7 @@
     <param name="can_interface" value="$(var can_interface)"/>
     <param name="left_wheel_node_id" value="$(var left_wheel_node_id)"/>
     <param name="right_wheel_node_id" value="$(var right_wheel_node_id)"/>
+    <param name="left_wheel_sign" value="$(var left_wheel_sign)"/>
+    <param name="right_wheel_sign" value="$(var right_wheel_sign)"/>
   </node>
 </launch>

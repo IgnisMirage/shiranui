@@ -25,6 +25,8 @@
   <exec_depend>mid360_driver</exec_depend>
   <exec_depend>joy</exec_depend>
   <exec_depend>joy_translate</exec_depend>
+  <exec_depend>drive_mode_switch</exec_depend>
+  <exec_depend>tf_publisher</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

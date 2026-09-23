@@ -19,11 +19,7 @@ private:
     rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr joy_sub_;
     rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr manual_mode_pub_;
     rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr auto_mode_pub_;
-    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_;
     Controller controller;
-
-    // Y: joy の指令を /cmd_vel に直接流す, LB/RB: 直結を解除
-    bool direct_cmd_vel_mode_ = false;
     
     
     float max_linear_velocity_ = 0.8;

@@ -1,6 +1,6 @@
 <launch>
   <!-- ラウンチ引数の宣言 -->
-  <arg name="port" default="/dev/ttyUSB0" description="Serial port device"/>
+  <arg name="port" default="/dev/ttyAMA10" description="Serial port device"/>
   <arg name="frame_id" default="laser_frame" description="LaserScan frame ID"/>
 
   <!-- TG15 Driverノード -->

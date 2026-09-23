@@ -17,7 +17,7 @@ namespace tg15_driver
 TG15Driver::TG15Driver(const rclcpp::NodeOptions & options)
 : Node("tg15_driver", options)
 {
-  port_ = this->declare_parameter("port", "/dev/ttyUSB0");
+  port_ = this->declare_parameter("port", "/dev/ttyAMA10");
   baudrate_ = this->declare_parameter("baudrate", 512000);
   frame_id_ = this->declare_parameter("frame_id", "laser_frame");
   range_min_ = this->declare_parameter("range_min", 0.05);
