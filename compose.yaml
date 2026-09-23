@@ -11,4 +11,8 @@ services:
       - /dev/ttyUSB0:/dev/ttyUSB0
       - /dev/ttyAMA10:/dev/ttyAMA10
       - /dev/bus/usb:/dev/bus/usb
-      - /dev/input/js0:/dev/input/js0
+    # joy_node (SDL2) は /dev/input/event* を使う。抜き差しで番号が変わるのでディレクトリごと渡す
+    volumes:
+      - /dev/input:/dev/input
+    device_cgroup_rules:
+      - 'c 13:* rmw'

@@ -7,6 +7,7 @@ JoyTranslate::JoyTranslate()
     joy_twist_pub_ = this->create_publisher<geometry_msgs::msg::Twist>("manual_cmd_vel", 10);
     manual_mode_pub_ = this->create_publisher<std_msgs::msg::Empty>("manual_mode", 10);
     auto_mode_pub_ = this->create_publisher<std_msgs::msg::Empty>("auto_mode", 10);
+    cmd_vel_pub_ = this->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 10);
     joy_sub_ = this->create_subscription<sensor_msgs::msg::Joy>(
         "joy", 10, std::bind(&JoyTranslate::joy_output_cb, this, std::placeholders::_1));
 }
@@ -29,7 +30,20 @@ void JoyTranslate::joy_output_cb(const sensor_msgs::msg::Joy &msg)
         manual_mode_pub_->publish(std_msgs::msg::Empty());
     } else if (controller.RB_btn) {
         auto_mode_pub_->publish(std_msgs::msg::Empty());
-    } 
+    }
+
+    if (controller.Y_btn && !direct_cmd_vel_mode_) {
+        direct_cmd_vel_mode_ = true;
+        RCLCPP_INFO(this->get_logger(), "Direct cmd_vel mode: ON");
+    } else if ((controller.LB_btn || controller.RB_btn) && direct_cmd_vel_mode_) {
+        direct_cmd_vel_mode_ = false;
+        cmd_vel_pub_->publish(geometry_msgs::msg::Twist());
+        RCLCPP_INFO(this->get_logger(), "Direct cmd_vel mode: OFF");
+    }
+
+    if (direct_cmd_vel_mode_) {
+        cmd_vel_pub_->publish(twist_msg);
+    }
 }
 
 
