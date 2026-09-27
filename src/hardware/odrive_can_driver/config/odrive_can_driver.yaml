@@ -9,12 +9,12 @@ odrive_can_driver:
     right_wheel_node_id: 2
 
     # Robot physical parameters
-    wheel_base: 0.30        # Distance between wheels [m]
-    wheel_radius: 0.05      # Wheel radius [m]
+    wheel_base: 0.24730683  # Tread [m] (290 - 42.69317 mm)
+    wheel_radius: 0.08565   # Wheel radius [m] (diameter 171.30 mm)
 
     # Wheel direction signs (+1 or -1, depends on motor mounting)
-    left_wheel_sign: 1.0
-    right_wheel_sign: -1.0
+    left_wheel_sign: -1.0
+    right_wheel_sign: 1.0
 
     # Velocity limits
     max_velocity: 1.0       # Maximum wheel linear velocity [m/s]

@@ -22,10 +22,10 @@ private:
     Controller controller;
     
     
-    float max_linear_velocity_ = 0.8;
-    float min_linear_velocity_ = -0.8;
-    float max_angular_velocity_= 0.5;
-    float min_angular_velocity_ = -0.5;
+    float max_linear_velocity_{0.5F};
+    float min_linear_velocity_{-0.5F};
+    float max_angular_velocity_{0.5F};
+    float min_angular_velocity_{-0.5F};
 };
 
 #endif  // JOY_TRANSLATE_HPP_
