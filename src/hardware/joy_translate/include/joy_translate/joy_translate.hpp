@@ -24,8 +24,8 @@ private:
     
     float max_linear_velocity_{0.5F};
     float min_linear_velocity_{-0.5F};
-    float max_angular_velocity_{0.5F};
-    float min_angular_velocity_{-0.5F};
+    float max_angular_velocity_{0.7F};
+    float min_angular_velocity_{-0.7F};
 };
 
 #endif  // JOY_TRANSLATE_HPP_

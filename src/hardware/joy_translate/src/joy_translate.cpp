@@ -7,7 +7,7 @@ JoyTranslate::JoyTranslate()
 : Node("joy_translate_node")
 {
     max_linear_velocity_ = static_cast<float>(declare_parameter("max_linear_velocity", 0.5));
-    max_angular_velocity_ = static_cast<float>(declare_parameter("max_angular_velocity", 0.5));
+    max_angular_velocity_ = static_cast<float>(declare_parameter("max_angular_velocity", 0.7));
     min_linear_velocity_ = -std::abs(max_linear_velocity_);
     min_angular_velocity_ = -std::abs(max_angular_velocity_);
 
