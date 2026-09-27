@@ -27,6 +27,8 @@
   <exec_depend>joy_translate</exec_depend>
   <exec_depend>drive_mode_switch</exec_depend>
   <exec_depend>tf_publisher</exec_depend>
+  <exec_depend>pointcloud_to_laserscan</exec_depend>
+  <exec_depend>robot_sim</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
