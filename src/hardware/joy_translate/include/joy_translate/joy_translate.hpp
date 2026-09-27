@@ -4,9 +4,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 #include "sensor_msgs/msg/joy.hpp"
-#include "std_msgs/msg/int32.hpp"
 #include "controller.hpp"
-#include "std_msgs/msg/empty.hpp"
 
 class JoyTranslate : public rclcpp::Node
 {
@@ -17,8 +15,6 @@ private:
     void joy_output_cb(const sensor_msgs::msg::Joy & msg);
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr joy_twist_pub_;
     rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr joy_sub_;
-    rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr manual_mode_pub_;
-    rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr auto_mode_pub_;
     Controller controller;
     
     
