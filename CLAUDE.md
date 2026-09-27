@@ -1,5 +1,9 @@
 # build method
 
+## 運用方針
+
+**このリポジトリは基本的に Docker で動かす**（`compose.yaml` + GHCR イメージ、または `./scripts/build.sh docker`）。起動・実機確認・手順の説明は `docker compose pull` / `docker compose up` を前提にする。ローカル colcon はパッケージ開発時のビルド確認用。
+
 ## ビルドスクリプト
 
 ```bash

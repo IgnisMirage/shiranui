@@ -11,10 +11,21 @@
 
   <arg name="a_star" default="true" description="A* グローバルプランナーを起動するか (true/false)"/>
 
-  <arg name="map" default="true" description="map_publisher で地図を配信するか (true/false)"/>
+  <arg name="map" default="true" description="地図を配信するか (true/false)"/>
+  <arg name="map_mode" default="pointcloud"
+       description="地図の形式: occupancy_grid (2D) / pointcloud (3D localization 用 PCD スライス)">
+    <choice value="occupancy_grid"/>
+    <choice value="pointcloud"/>
+  </arg>
   <arg name="safety_limiter" default="true" description="安全監視ノードを起動するか (true/false)"/>
   <arg name="map_yaml" default="$(find-pkg-share autonomous_drive)/map/map.yaml"
-       description="読み込む地図の yaml ファイル"/>
+       description="2D 占有格子 (map_mode=occupancy_grid のとき)"/>
+  <arg name="map_pcd_path" default="$(find-pkg-share autonomous_drive)/map/map.pcd"
+       description="3D 地図 PCD (map_mode=pointcloud および ndt_localizer)"/>
+  <arg name="map_min_height" default="0.2" description="map 点群: 地面 (z=0) からの高さ下限 [m]"/>
+  <arg name="map_max_height" default="2.0" description="map 点群: 高さ上限 [m]"/>
+  <arg name="map_crop_radius" default="0.0" description="map 点群: XY 半径 [m] (0=全範囲)"/>
+  <arg name="map_voxel_leaf_size" default="0.3" description="map 点群: ボクセルサイズ [m]"/>
 
   <arg name="odrive_can_driver" default="true" description="ODrive CAN Driver を起動するか (true/false)"/>
   <arg name="can_interface" default="can0" description="CAN interface name"/>
@@ -137,15 +148,27 @@
   </node>
 
   <node pkg="autonomous_drive" exec="map_publisher_node" name="map_publisher" output="screen"
-        if="$(var map)">
+        if="$(eval '$(var map) and &quot;$(var map_mode)&quot; == &quot;occupancy_grid&quot;')">
     <param name="map_yaml" value="$(var map_yaml)"/>
     <param name="topic_name" value="map"/>
     <param name="frame_id" value="map"/>
     <param name="publish_rate" value="1.0"/>
   </node>
 
+  <node pkg="autonomous_drive" exec="map_pointcloud_publisher_node" name="map_pointcloud_publisher"
+        output="screen"
+        if="$(eval '$(var map) and &quot;$(var map_mode)&quot; == &quot;pointcloud&quot;')">
+    <param from="$(find-pkg-share autonomous_drive)/config/map_pointcloud_params.yaml"/>
+    <param name="map_pcd_path" value="$(var map_pcd_path)"/>
+    <param name="min_height" value="$(var map_min_height)"/>
+    <param name="max_height" value="$(var map_max_height)"/>
+    <param name="crop_radius" value="$(var map_crop_radius)"/>
+    <param name="voxel_leaf_size" value="$(var map_voxel_leaf_size)"/>
+  </node>
+
   <node pkg="a_star_planner" exec="a_star_component" name="a_star_planner_node"
-        output="screen" if="$(var a_star)">
+        output="screen"
+        if="$(eval '$(var a_star) and &quot;$(var map_mode)&quot; == &quot;occupancy_grid&quot;')">
     <param from="$(find-pkg-share a_star_planner)/config/planner_params.yaml"/>
     <param name="use_sim_time" value="false"/>
   </node>
