@@ -226,8 +226,10 @@ void Mid360Driver::handlePointCloudPacket(const LivoxLidarEthernetPacket* packet
     return;
   }
 
+  const rclcpp::Time received = now();
   std::lock_guard<std::mutex> lock(packets_mutex_);
   accumulated_packets_.push_back(std::move(snapshot));
+  last_packet_stamp_ = received;
 }
 
 void Mid360Driver::handleImuPacket(const LivoxLidarEthernetPacket* packet)
@@ -277,16 +279,17 @@ rclcpp::Time Mid360Driver::packetTimestamp(const LivoxLidarEthernetPacket* packe
 void Mid360Driver::publishPointCloud()
 {
   std::vector<RawPacketSnapshot> packets;
+  rclcpp::Time stamp;
   {
     std::lock_guard<std::mutex> lock(packets_mutex_);
     packets.swap(accumulated_packets_);
+    stamp = last_packet_stamp_;
   }
 
   if (packets.empty()) {
     return;
   }
 
-  const rclcpp::Time stamp = now();
   packet_pub_->publish(toRosPacket(stamp, frame_id_, packets));
 
   const auto points = decodeRawPackets(packets);

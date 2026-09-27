@@ -1,5 +1,6 @@
 #include "mid360/packet_codec.hpp"
 
+#include <algorithm>
 #include <cstring>
 
 #include <sensor_msgs/point_cloud2_iterator.hpp>
@@ -83,6 +84,11 @@ std::vector<PointXYZIT> decodeRawPacket(const RawPacketSnapshot& snapshot)
   points.reserve(snapshot.dot_num);
   const uint8_t* raw = snapshot.data.data();
 
+  uint64_t packet_stamp_ns = 0;
+  std::memcpy(&packet_stamp_ns, snapshot.livox_timestamp, sizeof(packet_stamp_ns));
+  // time_interval is in units of 0.1 us and spans the whole packet.
+  const uint64_t point_interval_ns = static_cast<uint64_t>(snapshot.time_interval) * 100 / snapshot.dot_num;
+
   if (snapshot.data_type == kLivoxLidarCartesianCoordinateHighData) {
     const auto* cartesian = reinterpret_cast<const LivoxLidarCartesianHighRawPoint*>(raw);
     for (uint32_t i = 0; i < snapshot.dot_num; ++i) {
@@ -93,6 +99,7 @@ std::vector<PointXYZIT> decodeRawPacket(const RawPacketSnapshot& snapshot)
       point.intensity = static_cast<float>(cartesian[i].reflectivity);
       point.tag = cartesian[i].tag;
       point.line = static_cast<uint8_t>(i % kLineNumberMid360);
+      point.timestamp_ns = packet_stamp_ns + i * point_interval_ns;
       points.push_back(point);
     }
   } else if (snapshot.data_type == kLivoxLidarCartesianCoordinateLowData) {
@@ -105,6 +112,7 @@ std::vector<PointXYZIT> decodeRawPacket(const RawPacketSnapshot& snapshot)
       point.intensity = static_cast<float>(cartesian[i].reflectivity);
       point.tag = cartesian[i].tag;
       point.line = static_cast<uint8_t>(i % kLineNumberMid360);
+      point.timestamp_ns = packet_stamp_ns + i * point_interval_ns;
       points.push_back(point);
     }
   }
@@ -118,6 +126,14 @@ std::vector<PointXYZIT> decodeRawPackets(const std::vector<RawPacketSnapshot>& s
   for (const auto& snapshot : snapshots) {
     const auto packet_points = decodeRawPacket(snapshot);
     points.insert(points.end(), packet_points.begin(), packet_points.end());
+  }
+
+  uint64_t latest_ns = 0;
+  for (const auto& point : points) {
+    latest_ns = std::max(latest_ns, point.timestamp_ns);
+  }
+  for (auto& point : points) {
+    point.time = -static_cast<float>(static_cast<double>(latest_ns - point.timestamp_ns) * 1e-9);
   }
   return points;
 }
@@ -156,17 +172,18 @@ sensor_msgs::msg::PointCloud2 toPointCloud2(const std::vector<PointXYZIT>& point
   cloud_msg.width = static_cast<uint32_t>(points.size());
   cloud_msg.is_dense = false;
   cloud_msg.is_bigendian = false;
-  cloud_msg.point_step = 20;
+  cloud_msg.point_step = 24;
   cloud_msg.row_step = cloud_msg.point_step * cloud_msg.width;
 
-  cloud_msg.fields.resize(6);
-  const char* names[] = {"x", "y", "z", "intensity", "tag", "line"};
-  const uint8_t offsets[] = {0, 4, 8, 12, 16, 17};
+  cloud_msg.fields.resize(7);
+  const char* names[] = {"x", "y", "z", "intensity", "tag", "line", "time"};
+  const uint8_t offsets[] = {0, 4, 8, 12, 16, 17, 20};
   const uint8_t datatypes[] = {
       sensor_msgs::msg::PointField::FLOAT32, sensor_msgs::msg::PointField::FLOAT32,
       sensor_msgs::msg::PointField::FLOAT32, sensor_msgs::msg::PointField::FLOAT32,
-      sensor_msgs::msg::PointField::UINT8,   sensor_msgs::msg::PointField::UINT8};
-  for (int i = 0; i < 6; ++i) {
+      sensor_msgs::msg::PointField::UINT8,   sensor_msgs::msg::PointField::UINT8,
+      sensor_msgs::msg::PointField::FLOAT32};
+  for (int i = 0; i < 7; ++i) {
     cloud_msg.fields[i].name = names[i];
     cloud_msg.fields[i].offset = offsets[i];
     cloud_msg.fields[i].datatype = datatypes[i];
@@ -180,6 +197,7 @@ sensor_msgs::msg::PointCloud2 toPointCloud2(const std::vector<PointXYZIT>& point
   sensor_msgs::PointCloud2Iterator<float> iter_intensity(cloud_msg, "intensity");
   sensor_msgs::PointCloud2Iterator<uint8_t> iter_tag(cloud_msg, "tag");
   sensor_msgs::PointCloud2Iterator<uint8_t> iter_line(cloud_msg, "line");
+  sensor_msgs::PointCloud2Iterator<float> iter_time(cloud_msg, "time");
 
   for (const auto& point : points) {
     *iter_x = point.x;
@@ -188,12 +206,14 @@ sensor_msgs::msg::PointCloud2 toPointCloud2(const std::vector<PointXYZIT>& point
     *iter_intensity = point.intensity;
     *iter_tag = point.tag;
     *iter_line = point.line;
+    *iter_time = point.time;
     ++iter_x;
     ++iter_y;
     ++iter_z;
     ++iter_intensity;
     ++iter_tag;
     ++iter_line;
+    ++iter_time;
   }
 
   return cloud_msg;

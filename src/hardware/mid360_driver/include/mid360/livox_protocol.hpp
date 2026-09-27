@@ -152,6 +152,9 @@ struct PointXYZIT
   float intensity;
   uint8_t tag;
   uint8_t line;
+  // Seconds relative to the latest point in the cloud (<= 0).
+  float time;
+  uint64_t timestamp_ns;
 };
 
 }  // namespace mid360

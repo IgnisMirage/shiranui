@@ -69,6 +69,7 @@ private:
 
   std::mutex packets_mutex_;
   std::vector<RawPacketSnapshot> accumulated_packets_;
+  rclcpp::Time last_packet_stamp_;
 };
 
 }  // namespace mid360
