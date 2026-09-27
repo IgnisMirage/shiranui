@@ -20,8 +20,8 @@
   <arg name="can_interface" default="can0" description="CAN interface name"/>
   <arg name="left_wheel_node_id" default="1" description="Left wheel ODrive node ID"/>
   <arg name="right_wheel_node_id" default="2" description="Right wheel ODrive node ID"/>
-  <arg name="left_wheel_sign" default="1.0" description="左車輪の回転方向 (+1/-1)"/>
-  <arg name="right_wheel_sign" default="-1.0" description="右車輪の回転方向 (+1/-1)"/>
+  <arg name="left_wheel_sign" default="-1.0" description="左車輪の回転方向 (+1/-1)"/>
+  <arg name="right_wheel_sign" default="1.0" description="右車輪の回転方向 (+1/-1)"/>
 
   <arg name="tg15_driver" default="true" description="TG15 (2D LiDAR) Driver を起動するか (true/false)"/>
   <arg name="tg15_port" default="/dev/ttyAMA10" description="TG15 のシリアルポート"/>
@@ -37,6 +37,8 @@
   <arg name="joy" default="true" description="ジョイスティック入力 (joy_node / joy_translate) を起動するか (true/false)"/>
   <arg name="joy_device_id" default="0" description="使用するジョイスティックのデバイス ID"/>
   <arg name="joy_deadzone" default="0.05" description="joy_node のデッドゾーン"/>
+  <arg name="joy_max_linear_velocity" default="0.5" description="手動操縦の最大線速度 [m/s]"/>
+  <arg name="joy_max_angular_velocity" default="0.5" description="手動操縦の最大角速度 [rad/s]"/>
 
   <arg name="tf_publisher" default="true" description="TF Publisher を起動するか (true/false)"/>
   <arg name="transforms_file" default="$(find-pkg-share tf_publisher)/config/transforms.yaml"
@@ -82,7 +84,10 @@
   </node>
 
   <node pkg="joy_translate" exec="joy_translate_node" name="joy_translate" output="screen"
-        if="$(var joy)"/>
+        if="$(var joy)">
+    <param name="max_linear_velocity" value="$(var joy_max_linear_velocity)"/>
+    <param name="max_angular_velocity" value="$(var joy_max_angular_velocity)"/>
+  </node>
 
   <!-- RB=manual / start=auto で /manual_cmd_vel と /auto_cmd_vel のどちらかを /cmd_vel に流す -->
   <node pkg="drive_mode_switch" exec="drive_mode_switch_node" name="drive_mode_switch" output="screen"/>
