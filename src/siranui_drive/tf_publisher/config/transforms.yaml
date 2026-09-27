@@ -14,9 +14,9 @@ transforms:
   - parent_frame: "base_link"
     child_frame: "mid360"
     translation:
-      x: 0.0
+      x: 0.3035
       y: 0.0
-      z: 0.0
+      z: 0.2551
     rotation:
       type: "euler"
       roll: 0.0

@@ -10,7 +10,6 @@ services:
     devices:
       - /dev/ttyAMA10:/dev/ttyAMA10
       - /dev/bus/usb:/dev/bus/usb
-    # joy_node (SDL2) は /dev/input/event* を使う。抜き差しで番号が変わるのでディレクトリごと渡す
     volumes:
       - /dev/input:/dev/input
     device_cgroup_rules:
