@@ -36,6 +36,25 @@ docker compose up
 
 Foxglove Studio で `ws://localhost:8765` に接続し、`/goal_pose` に目標位置を送る。
 
+suke@raspberrypi:~ $ docker exec -it siranui-shiranui-1 bash -c 'sourse /opt/ros/jazzy/setup.bash && ros2 bag record -a -o /rosbag/$(date +%Y%m%d_%H%M%S) -s mcap'
+bash: line 1: sourse: command not found
+suke@raspberrypi:~ $ docker exec -it siranui-shiranui-1 bash -c 'sourse /opt/ros/jazzy/setup.bash && ros2 bag record -a -o /rosbag/$(date +%Y%m%d_%H%M%S) -s mcap'
+### rosbag 録画
+
+`compose.yaml` で **`./rosbag:/rosbag`** をマウントする。起動中の **同一コンテナ**（`docker ps` の NAMES、例: `siranui-shiranui-1`）で録画する（別 `docker run` だと点群などが bag に入らないことがある）。
+
+**1. マウント付きで起動**（`compose.yaml` があるディレクトリで。既に起動済みなら `--force-recreate` で作り直す）
+
+```bash
+mkdir -p rosbag && docker compose up -d --force-recreate
+```
+
+**2. 録画**（ホストの `./rosbag/` に直接保存。`docker exec` は entrypoint を通らないので **source 必須**）
+
+```bash
+docker exec -it siranui-shiranui-1 bash -c 'source /opt/ros/jazzy/setup.bash && source /ros2_ws/install/setup.bash && ros2 bag record -a -o /rosbag/$(date +%Y%m%d_%H%M%S) -s mcap'
+```
+
 launch のオプション（foxglove / lidar_sim / safety_limiter 等）は `autonomous_drive.launch.xml` のデフォルト（true）を使用する。
 
 ### ローカルでイメージをビルドする場合（開発・CI 用）

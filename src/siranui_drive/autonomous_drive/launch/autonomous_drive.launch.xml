@@ -148,7 +148,7 @@
   </node>
 
   <node pkg="autonomous_drive" exec="map_publisher_node" name="map_publisher" output="screen"
-        if="$(eval '$(var map) and &quot;$(var map_mode)&quot; == &quot;occupancy_grid&quot;')">
+        if="$(eval '&quot;$(var map)&quot; == &quot;true&quot; and &quot;$(var map_mode)&quot; == &quot;occupancy_grid&quot;')">
     <param name="map_yaml" value="$(var map_yaml)"/>
     <param name="topic_name" value="map"/>
     <param name="frame_id" value="map"/>
@@ -157,7 +157,7 @@
 
   <node pkg="autonomous_drive" exec="map_pointcloud_publisher_node" name="map_pointcloud_publisher"
         output="screen"
-        if="$(eval '$(var map) and &quot;$(var map_mode)&quot; == &quot;pointcloud&quot;')">
+        if="$(eval '&quot;$(var map)&quot; == &quot;true&quot; and &quot;$(var map_mode)&quot; == &quot;pointcloud&quot;')">
     <param from="$(find-pkg-share autonomous_drive)/config/map_pointcloud_params.yaml"/>
     <param name="map_pcd_path" value="$(var map_pcd_path)"/>
     <param name="min_height" value="$(var map_min_height)"/>
@@ -168,7 +168,7 @@
 
   <node pkg="a_star_planner" exec="a_star_component" name="a_star_planner_node"
         output="screen"
-        if="$(eval '$(var a_star) and &quot;$(var map_mode)&quot; == &quot;occupancy_grid&quot;')">
+        if="$(eval '&quot;$(var a_star)&quot; == &quot;true&quot; and &quot;$(var map_mode)&quot; == &quot;occupancy_grid&quot;')">
     <param from="$(find-pkg-share a_star_planner)/config/planner_params.yaml"/>
     <param name="use_sim_time" value="false"/>
   </node>
