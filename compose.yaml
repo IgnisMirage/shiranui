@@ -12,5 +12,6 @@ services:
       - /dev/bus/usb:/dev/bus/usb
     volumes:
       - /dev/input:/dev/input
+      - ./map/map.pcd:/ros2_ws/install/autonomous_drive/share/autonomous_drive/map/map.pcd:ro
     device_cgroup_rules:
       - 'c 13:* rmw'
