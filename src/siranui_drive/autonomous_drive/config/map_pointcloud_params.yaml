@@ -8,4 +8,4 @@
       min_height: -10.0
       max_height: 100.0
       crop_radius: 0.0   # 0 = 全範囲、>0 なら map 原点からの XY 半径 [m]
-      voxel_leaf_size: 0.3
+      voxel_leaf_size: 0.0

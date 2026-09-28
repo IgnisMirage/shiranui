@@ -25,7 +25,7 @@
   <arg name="map_min_height" default="-10.0" description="map 点群: 地面 (z=0) からの高さ下限 [m]"/>
   <arg name="map_max_height" default="100.0" description="map 点群: 高さ上限 [m]"/>
   <arg name="map_crop_radius" default="0.0" description="map 点群: XY 半径 [m] (0=全範囲)"/>
-  <arg name="map_voxel_leaf_size" default="0.3" description="map 点群: ボクセルサイズ [m]"/>
+  <arg name="map_voxel_leaf_size" default="0.0" description="map 点群: ボクセルサイズ [m] (0=無効)"/>
 
   <arg name="odrive_can_driver" default="true" description="ODrive CAN Driver を起動するか (true/false)"/>
   <arg name="can_interface" default="can0" description="CAN interface name"/>
