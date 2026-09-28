@@ -6,13 +6,17 @@ services:
     environment:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
       - RMW_IMPLEMENTATION=${RMW_IMPLEMENTATION:-rmw_fastrtps_cpp}
+      # SDL2 (joy パッケージが使用) は udev 経由でジョイスティックを検出するが、
+      # コンテナ内では netlink 経由の udev モニタが機能せず検出できない。
+      # udev を無効化しデバイスを直接指定することで回避する。
+      - SDL_JOYSTICK_DISABLE_UDEV=1
+      - SDL_JOYSTICK_DEVICE=/dev/input/js0
     command: ["ros2", "launch", "autonomous_drive", "autonomous_drive.launch.xml", "can_interface:=${CAN_INTERFACE:-can0}", "tg15_driver:=${TG15_DRIVER:-false}"]
     devices:
       - /dev/ttyAMA10:/dev/ttyAMA10
       - /dev/bus/usb:/dev/bus/usb
+      - /dev/input/js0:/dev/input/js0
     volumes:
       - /dev/input:/dev/input
       - ./rosbag:/rosbag
       - ./map/map.pcd:/ros2_ws/install/autonomous_drive/share/autonomous_drive/map/map.pcd:ro
-    device_cgroup_rules:
-      - 'c 13:* rmw'
