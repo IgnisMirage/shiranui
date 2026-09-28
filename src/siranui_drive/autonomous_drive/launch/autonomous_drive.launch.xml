@@ -22,8 +22,8 @@
        description="2D 占有格子 (map_mode=occupancy_grid のとき)"/>
   <arg name="map_pcd_path" default="$(find-pkg-share autonomous_drive)/map/map.pcd"
        description="3D 地図 PCD (map_mode=pointcloud および ndt_localizer)"/>
-  <arg name="map_min_height" default="0.2" description="map 点群: 地面 (z=0) からの高さ下限 [m]"/>
-  <arg name="map_max_height" default="2.0" description="map 点群: 高さ上限 [m]"/>
+  <arg name="map_min_height" default="-10.0" description="map 点群: 地面 (z=0) からの高さ下限 [m]"/>
+  <arg name="map_max_height" default="100.0" description="map 点群: 高さ上限 [m]"/>
   <arg name="map_crop_radius" default="0.0" description="map 点群: XY 半径 [m] (0=全範囲)"/>
   <arg name="map_voxel_leaf_size" default="0.3" description="map 点群: ボクセルサイズ [m]"/>
 
@@ -45,6 +45,8 @@
   <arg name="mid360_points_topic" default="/mid360/points" description="Mid-360 の PointCloud2 出力トピック"/>
   <arg name="mid360_packet_topic" default="/mid360/packet" description="Mid-360 の生パケット出力トピック"/>
   <arg name="mid360_imu_topic" default="/mid360/imu" description="Mid-360 の IMU 出力トピック"/>
+
+  <arg name="ndt_localizer" default="true" description="NDT による 3D localization (map -> odom TF) を起動するか (true/false)"/>
 
   <!-- Mid-360 の点群から /scan を作るときの切り出し範囲（base_link 基準） -->
   <arg name="scan_min_height" default="0.1" description="/scan に使う点の高さ下限 [m]（地面を除外）"/>
@@ -93,6 +95,13 @@
     <arg name="lidar_ip" value="$(var mid360_lidar_ip)"/>
     <arg name="points_topic" value="$(var mid360_points_topic)"/>
     <arg name="packet_topic" value="$(var mid360_packet_topic)"/>
+    <arg name="imu_topic" value="$(var mid360_imu_topic)"/>
+  </include>
+
+  <include file="$(find-pkg-share ndt_localizer)/launch/ndt_localizer.launch.xml"
+           if="$(var ndt_localizer)">
+    <arg name="map_pcd_path" value="$(var map_pcd_path)"/>
+    <arg name="input_topic" value="$(var mid360_points_topic)"/>
     <arg name="imu_topic" value="$(var mid360_imu_topic)"/>
   </include>
 
