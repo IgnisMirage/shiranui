@@ -15,7 +15,7 @@ public:
       return;
     }
 
-    auto broadcaster = std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
+    broadcaster_ = std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
     std::vector<geometry_msgs::msg::TransformStamped> transforms;
 
     try {
@@ -64,13 +64,16 @@ public:
         }
       }
 
-      broadcaster->sendTransform(transforms);
+      broadcaster_->sendTransform(transforms);
       RCLCPP_INFO(get_logger(), "Published %zu transforms", transforms.size());
 
     } catch (const std::exception& e) {
       RCLCPP_ERROR(get_logger(), "Error loading transforms: %s", e.what());
     }
   }
+
+private:
+  std::shared_ptr<tf2_ros::StaticTransformBroadcaster> broadcaster_;
 };
 
 int main(int argc, char* argv[]) {
