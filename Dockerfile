@@ -46,18 +46,13 @@ RUN source /opt/ros/jazzy/setup.bash \
 FROM base AS deploy
 
 COPY --from=build /ros2_ws/install /ros2_ws/install
-COPY scripts/docker-entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
 
 WORKDIR /ros2_ws
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/bin/bash", "-c", "source /opt/ros/jazzy/setup.bash && [ -f /ros2_ws/install/setup.bash ] && source /ros2_ws/install/setup.bash; exec \"$0\" \"$@\""]
 CMD ["ros2", "launch", "autonomous_drive", "autonomous_drive.launch.xml"]
 
 FROM base AS devenv
 
-COPY scripts/docker-entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
 WORKDIR /ros2_ws
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/bin/bash", "-c", "source /opt/ros/jazzy/setup.bash && [ -f /ros2_ws/install/setup.bash ] && source /ros2_ws/install/setup.bash; exec \"$0\" \"$@\""]
 CMD ["bash"]
