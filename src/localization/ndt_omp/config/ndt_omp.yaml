@@ -1,0 +1,51 @@
+/**:
+  ros__parameters:
+    points_topic: /mid360/points
+    initialpose_topic: /initialpose
+    odom_topic: /localization/odom
+    aligned_points_topic: /aligned_points
+    globalmap_view_topic: /globalmap_view
+
+    global_frame_id: map
+    odom_frame_id: odom
+    base_frame_id: base_link
+    publish_tf: true
+
+    # launch の map_pcd_path で上書きする
+    globalmap_pcd: ''
+    view_downsample_resolution: 0.5
+
+    # ia-amr-ros は 0.5 m。siranui の map.pcd は疎（約 1.3 万点）なので、
+    # 旧 ndt_localizer と同じ 2.0 m にしている
+    ndt_resolution: 2.0
+    ndt_neighbor_search_method: DIRECT7
+    ndt_num_threads: 4
+    ndt_max_iterations: 30
+    ndt_transformation_epsilon: 0.001
+    ndt_step_size: 0.1
+    # Raspberry Pi で 10 Hz に追従させるため ia-amr-ros (0.1 m) より粗くする
+    downsample_resolution: 0.5
+    min_scan_points: 100
+
+    specify_init_pose: false
+    init_pos_x: 0.0
+    init_pos_y: 0.0
+    init_pos_z: 0.0
+    init_ori_x: 0.0
+    init_ori_y: 0.0
+    init_ori_z: 0.0
+    init_ori_w: 1.0
+
+    max_linear_speed_skip: 0.0
+    # fitness は ndt_resolution 付近で飽和するので 0.5 * ndt_resolution にする
+    fitness_max: 1.0
+    # ia-amr-ros の Mid-360 実測値 (正常時の最小 0.868) から決めた値。
+    # siranui の地図では未計測なので、~/status の inlier_ratio を見て調整する
+    min_inlier_ratio: 0.8
+    min_trans_probability: 0.0
+    max_step_trans: 0.5
+    max_step_rot: 10.0
+
+    tf_timeout: 0.1
+    transform_tolerance: 0.3
+    points_queue_size: 1

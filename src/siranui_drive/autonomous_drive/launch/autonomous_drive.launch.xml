@@ -9,25 +9,24 @@
   <arg name="foxglove" default="true" description="Foxglove Bridge を起動するか (true/false)"/>
   <arg name="foxglove_port" default="8765" description="Foxglove Bridge の待ち受けポート"/>
 
-  <arg name="a_star" default="true" description="A* グローバルプランナーを起動するか (true/false)"/>
-
   <arg name="map" default="true" description="地図を配信するか (true/false)"/>
   <arg name="map_mode" default="pointcloud"
        description="地図の形式: occupancy_grid (2D) / pointcloud (3D localization 用 PCD スライス)">
     <choice value="occupancy_grid"/>
     <choice value="pointcloud"/>
   </arg>
-  <arg name="safety_limiter" default="true" description="安全監視ノードを起動するか (true/false)"/>
   <arg name="map_yaml" default="$(find-pkg-share autonomous_drive)/map/map.yaml"
        description="2D 占有格子 (map_mode=occupancy_grid のとき)"/>
   <arg name="map_pcd_path" default="$(find-pkg-share autonomous_drive)/map/map.pcd"
-       description="3D 地図 PCD (map_mode=pointcloud および ndt_localizer)"/>
+       description="3D 地図 PCD (map_mode=pointcloud および ndt_omp)"/>
   <arg name="map_min_height" default="-10.0" description="map 点群: 地面 (z=0) からの高さ下限 [m]"/>
   <arg name="map_max_height" default="100.0" description="map 点群: 高さ上限 [m]"/>
   <arg name="map_crop_radius" default="0.0" description="map 点群: XY 半径 [m] (0=全範囲)"/>
   <arg name="map_voxel_leaf_size" default="0.0" description="map 点群: ボクセルサイズ [m] (0=無効)"/>
+  <arg name="grid_resolution" default="0.05" description="A* 用 2D 格子 (map.pcd から生成): セルサイズ [m]"/>
+  <arg name="grid_min_height" default="0.1" description="A* 用 2D 格子: 障害物とみなす高さ下限 [m]（地面を除外）"/>
+  <arg name="grid_max_height" default="1.0" description="A* 用 2D 格子: 障害物とみなす高さ上限 [m]"/>
 
-  <arg name="odrive_can_driver" default="true" description="ODrive CAN Driver を起動するか (true/false)"/>
   <arg name="can_interface" default="can0" description="CAN interface name"/>
   <arg name="left_wheel_node_id" default="1" description="Left wheel ODrive node ID"/>
   <arg name="right_wheel_node_id" default="2" description="Right wheel ODrive node ID"/>
@@ -39,14 +38,11 @@
   <arg name="tg15_port" default="/dev/ttyAMA10" description="TG15 のシリアルポート"/>
   <arg name="tg15_frame_id" default="laser_frame" description="TG15 の LaserScan フレーム ID"/>
 
-  <arg name="mid360_driver" default="true" description="Livox Mid-360 (3D LiDAR) Driver を起動するか (true/false)"/>
   <arg name="mid360_host_ip" default="192.168.1.15" description="Mid-360 との通信に使うホスト側 IP"/>
   <arg name="mid360_lidar_ip" default="192.168.1.125" description="Mid-360 本体の IP"/>
   <arg name="mid360_points_topic" default="/mid360/points" description="Mid-360 の PointCloud2 出力トピック"/>
   <arg name="mid360_packet_topic" default="/mid360/packet" description="Mid-360 の生パケット出力トピック"/>
   <arg name="mid360_imu_topic" default="/mid360/imu" description="Mid-360 の IMU 出力トピック"/>
-
-  <arg name="ndt_localizer" default="true" description="NDT による 3D localization (map -> odom TF) を起動するか (true/false)"/>
 
   <!-- Mid-360 の点群から /scan を作るときの切り出し範囲（base_link 基準） -->
   <arg name="scan_min_height" default="0.1" description="/scan に使う点の高さ下限 [m]（地面を除外）"/>
@@ -54,18 +50,15 @@
   <arg name="scan_range_min" default="0.4" description="これより近い点（車体）を除外 [m]"/>
   <arg name="scan_range_max" default="20.0" description="これより遠い点を除外 [m]"/>
 
-  <arg name="joy" default="true" description="ジョイスティック入力 (joy_node / joy_translate) を起動するか (true/false)"/>
   <arg name="joy_device_id" default="0" description="使用するジョイスティックのデバイス ID"/>
   <arg name="joy_deadzone" default="0.05" description="joy_node のデッドゾーン"/>
   <arg name="joy_max_linear_velocity" default="0.5" description="手動操縦の最大線速度 [m/s]"/>
   <arg name="joy_max_angular_velocity" default="0.7" description="手動操縦の最大角速度 [rad/s]"/>
 
-  <arg name="tf_publisher" default="true" description="TF Publisher を起動するか (true/false)"/>
   <arg name="transforms_file" default="$(find-pkg-share tf_publisher)/config/transforms.yaml"
        description="TF の定義ファイル"/>
 
-  <include file="$(find-pkg-share tf_publisher)/launch/tf_publisher.launch.xml"
-           if="$(var tf_publisher)">
+  <include file="$(find-pkg-share tf_publisher)/launch/tf_publisher.launch.xml">
     <arg name="transforms_file" value="$(var transforms_file)"/>
   </include>
 
@@ -74,8 +67,7 @@
     <arg name="port" value="$(var foxglove_port)"/>
   </include>
 
-  <include file="$(find-pkg-share odrive_can_driver)/launch/odrive_can_driver.launch.xml"
-           if="$(var odrive_can_driver)">
+  <include file="$(find-pkg-share odrive_can_driver)/launch/odrive_can_driver.launch.xml">
     <arg name="can_interface" value="$(var can_interface)"/>
     <arg name="left_wheel_node_id" value="$(var left_wheel_node_id)"/>
     <arg name="right_wheel_node_id" value="$(var right_wheel_node_id)"/>
@@ -89,8 +81,7 @@
     <arg name="frame_id" value="$(var tg15_frame_id)"/>
   </include>
 
-  <include file="$(find-pkg-share mid360_driver)/launch/mid360.launch.xml"
-           if="$(var mid360_driver)">
+  <include file="$(find-pkg-share mid360_driver)/launch/mid360.launch.xml">
     <arg name="host_ip" value="$(var mid360_host_ip)"/>
     <arg name="lidar_ip" value="$(var mid360_lidar_ip)"/>
     <arg name="points_topic" value="$(var mid360_points_topic)"/>
@@ -98,11 +89,9 @@
     <arg name="imu_topic" value="$(var mid360_imu_topic)"/>
   </include>
 
-  <include file="$(find-pkg-share ndt_localizer)/launch/ndt_localizer.launch.xml"
-           if="$(var ndt_localizer)">
+  <include file="$(find-pkg-share ndt_omp)/launch/ndt_omp.launch.xml">
     <arg name="map_pcd_path" value="$(var map_pcd_path)"/>
-    <arg name="input_topic" value="$(var mid360_points_topic)"/>
-    <arg name="imu_topic" value="$(var mid360_imu_topic)"/>
+    <arg name="points_topic" value="$(var mid360_points_topic)"/>
   </include>
 
   <node pkg="pointcloud_to_laserscan" exec="pointcloud_to_laserscan_node"
@@ -134,26 +123,26 @@
     <param from="$(find-pkg-share autonomous_drive)/config/footprint_params.yaml"/>
   </node>
 
-  <node pkg="joy" exec="joy_node" name="joy_node" output="screen" if="$(var joy)">
+  <node pkg="joy" exec="joy_node" name="joy_node" output="screen">
     <param name="device_id" value="$(var joy_device_id)"/>
     <param name="deadzone" value="$(var joy_deadzone)"/>
   </node>
 
-  <node pkg="joy_translate" exec="joy_translate_node" name="joy_translate" output="screen"
-        if="$(var joy)">
+  <node pkg="joy_translate" exec="joy_translate_node" name="joy_translate" output="screen">
     <param name="max_linear_velocity" value="$(var joy_max_linear_velocity)"/>
     <param name="max_angular_velocity" value="$(var joy_max_angular_velocity)"/>
   </node>
 
-  <!-- RB=manual / start=auto で /manual_cmd_vel と /auto_cmd_vel のどちらかを /cmd_vel に流す -->
-  <node pkg="drive_mode_switch" exec="drive_mode_switch_node" name="drive_mode_switch" output="screen"/>
+  <!-- RB=manual / start=auto で /manual_cmd_vel と /auto_cmd_vel のどちらかを選んで /cmd_vel_in に出す。
+       safety_limiter が手動・自動どちらも軌道予測して /cmd_vel に流す -->
+  <node pkg="drive_mode_switch" exec="drive_mode_switch_node" name="drive_mode_switch" output="screen">
+    <remap from="cmd_vel" to="cmd_vel_in"/>
+  </node>
 
-  <node pkg="safety_limiter" exec="safety_limiter" name="safety_limiter" output="screen"
-        if="$(var safety_limiter)">
+  <node pkg="safety_limiter" exec="safety_limiter" name="safety_limiter" output="screen">
     <param from="$(find-pkg-share safety_limiter)/config/safety_limiter_params.yaml"/>
-    <param name="cmd_vel_out_topic" value="auto_cmd_vel"/>
-    <remap from="cloud" to="cloud"/>
-    <remap from="footprint" to="footprint"/>
+    <param name="cmd_vel_in_topic" value="cmd_vel_in"/>
+    <param name="cmd_vel_out_topic" value="cmd_vel"/>
   </node>
 
   <node pkg="autonomous_drive" exec="map_publisher_node" name="map_publisher" output="screen"
@@ -175,36 +164,34 @@
     <param name="voxel_leaf_size" value="$(var map_voxel_leaf_size)"/>
   </node>
 
-  <node pkg="a_star_planner" exec="a_star_component" name="a_star_planner_node"
+  <!-- A* のコストマップ: pointcloud モードでは map.pcd の高さスライスを 2D 格子にして map_grid に出す -->
+  <node pkg="autonomous_drive" exec="map_grid_publisher_node" name="map_grid_publisher"
         output="screen"
-        if="$(eval '&quot;$(var a_star)&quot; == &quot;true&quot; and &quot;$(var map_mode)&quot; == &quot;occupancy_grid&quot;')">
+        if="$(equals $(var map_mode) pointcloud)">
+    <param name="map_pcd_path" value="$(var map_pcd_path)"/>
+    <param name="topic_name" value="map_grid"/>
+    <param name="min_height" value="$(var grid_min_height)"/>
+    <param name="max_height" value="$(var grid_max_height)"/>
+    <param name="resolution" value="$(var grid_resolution)"/>
+  </node>
+
+  <!-- /goal_pose を受けて /path を出す。pointcloud モードは map_grid、occupancy_grid モードは map を使う -->
+  <node pkg="a_star_planner" exec="a_star_component" name="a_star_planner_node"
+        output="screen">
     <param from="$(find-pkg-share a_star_planner)/config/planner_params.yaml"/>
     <param name="use_sim_time" value="false"/>
+    <param name="map_topic"
+           value="$(eval '&quot;map_grid&quot; if &quot;$(var map_mode)&quot; == &quot;pointcloud&quot; else &quot;map&quot;')"/>
   </node>
 
+  <!-- ローカルプランナーは /path を追従して /auto_cmd_vel に出す -->
   <node pkg="pure_pursuit_planner" exec="pure_pursuit_planner_node" name="pure_pursuit_planner"
-        output="screen"
-        if="$(eval '&quot;$(var planner)&quot; == &quot;pure_pursuit&quot; and &quot;$(var safety_limiter)&quot; == &quot;true&quot;')">
-    <param from="$(find-pkg-share pure_pursuit_planner)/config/pure_pursuit_params.yaml"/>
-    <remap from="/auto_cmd_vel" to="/cmd_vel_in"/>
-  </node>
-
-  <node pkg="pure_pursuit_planner" exec="pure_pursuit_planner_node" name="pure_pursuit_planner_direct"
-        output="screen"
-        if="$(eval '&quot;$(var planner)&quot; == &quot;pure_pursuit&quot; and &quot;$(var safety_limiter)&quot; == &quot;false&quot;')">
+        output="screen" if="$(equals $(var planner) pure_pursuit)">
     <param from="$(find-pkg-share pure_pursuit_planner)/config/pure_pursuit_params.yaml"/>
   </node>
 
   <node pkg="stanley_planner" exec="stanley_planner_node" name="stanley_planner"
-        output="screen"
-        if="$(eval '&quot;$(var planner)&quot; == &quot;stanley&quot; and &quot;$(var safety_limiter)&quot; == &quot;true&quot;')">
-    <param from="$(find-pkg-share stanley_planner)/config/stanley_params.yaml"/>
-    <remap from="/auto_cmd_vel" to="/cmd_vel_in"/>
-  </node>
-
-  <node pkg="stanley_planner" exec="stanley_planner_node" name="stanley_planner_direct"
-        output="screen"
-        if="$(eval '&quot;$(var planner)&quot; == &quot;stanley&quot; and &quot;$(var safety_limiter)&quot; == &quot;false&quot;')">
+        output="screen" if="$(equals $(var planner) stanley)">
     <param from="$(find-pkg-share stanley_planner)/config/stanley_params.yaml"/>
   </node>
 

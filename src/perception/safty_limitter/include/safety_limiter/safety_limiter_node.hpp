@@ -76,6 +76,7 @@ private:
   std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
 
   geometry_msgs::msg::Twist::SharedPtr latest_cmd_vel_;
+  rclcpp::Time last_cmd_vel_time_;
   sensor_msgs::msg::PointCloud2::SharedPtr latest_cloud_;
   std::vector<Point2D> footprint_local_;
   std::vector<Point2D> cloud_points_map_;
@@ -97,6 +98,7 @@ private:
   std::string collision_margin_topic_;
   double publish_rate_;
   double prediction_time_;
+  double cmd_vel_timeout_;
   double prediction_step_;
   double footprint_margin_;
   bool enable_visualization_;

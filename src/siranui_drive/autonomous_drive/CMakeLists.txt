@@ -35,6 +35,15 @@ install(TARGETS map_pointcloud_publisher_node
   DESTINATION lib/${PROJECT_NAME}
 )
 
+add_executable(map_grid_publisher_node src/map_grid_publisher_node.cpp)
+target_include_directories(map_grid_publisher_node PRIVATE ${PCL_INCLUDE_DIRS})
+ament_target_dependencies(map_grid_publisher_node rclcpp nav_msgs)
+target_link_libraries(map_grid_publisher_node ${PCL_LIBRARIES})
+
+install(TARGETS map_grid_publisher_node
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 install(DIRECTORY
   config
   launch

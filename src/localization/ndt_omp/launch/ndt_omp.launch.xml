@@ -1,0 +1,14 @@
+<launch>
+  <!-- 3D 地図 PCD: 2D 地図 (map.yaml / map.png) と同じ autonomous_drive/map/ に置く -->
+  <arg name="map_pcd_path"
+       default="$(find-pkg-share autonomous_drive)/map/map.pcd"
+       description="NDT ターゲット地図 (PCD, map 座標系)"/>
+  <arg name="params_file" default="$(find-pkg-share ndt_omp)/config/ndt_omp.yaml"/>
+  <arg name="points_topic" default="/mid360/points"/>
+
+  <node pkg="ndt_omp" exec="ndt_omp_node" name="ndt_omp_node" output="screen">
+    <param from="$(var params_file)"/>
+    <param name="globalmap_pcd" value="$(var map_pcd_path)"/>
+    <param name="points_topic" value="$(var points_topic)"/>
+  </node>
+</launch>

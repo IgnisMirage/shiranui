@@ -1,3 +1,0 @@
-[submodule "src/localization/ndt_omp"]
-	path = src/localization/ndt_omp
-	url = https://github.com/tier4/ndt_omp.git

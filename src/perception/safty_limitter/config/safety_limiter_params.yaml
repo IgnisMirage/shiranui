@@ -2,10 +2,12 @@
   safety_limiter:
     ros__parameters:
       robot_frame: "base_link"
-      map_frame: "map"
+      # 予測・衝突判定を行う座標系。odom なら NDT (map -> odom) が無くても動く
+      map_frame: "odom"
       publish_rate: 10.0
       prediction_time: 2.0
       prediction_step: 0.1
+      cmd_vel_timeout: 0.5
       footprint_margin: 0.15
       enable_visualization: true
       visualization_stride: 3

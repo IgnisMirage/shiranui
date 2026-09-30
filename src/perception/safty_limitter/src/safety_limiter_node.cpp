@@ -22,6 +22,9 @@ SafetyLimiterNode::SafetyLimiterNode(const rclcpp::NodeOptions & options)
   publish_rate_ = declare_parameter<double>("publish_rate", 10.0);
   prediction_time_ = declare_parameter<double>("prediction_time", 2.0);
   prediction_step_ = declare_parameter<double>("prediction_step", 0.1);
+  // これより古い指令は停止 (0) とみなす。joy は押している間しか指令が来ず、
+  // プランナーもゴール到達後は止まるため、最後の指令を出し続けないようにする
+  cmd_vel_timeout_ = declare_parameter<double>("cmd_vel_timeout", 0.5);
   footprint_margin_ = declare_parameter<double>("footprint_margin", 0.15);
   enable_visualization_ = declare_parameter<bool>("enable_visualization", true);
   visualization_stride_ = declare_parameter<int>("visualization_stride", 3);
@@ -94,6 +97,7 @@ SafetyLimiterNode::SafetyLimiterNode(const rclcpp::NodeOptions & options)
 void SafetyLimiterNode::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg)
 {
   latest_cmd_vel_ = msg;
+  last_cmd_vel_time_ = now();
   has_cmd_vel_ = true;
 }
 
@@ -405,6 +409,10 @@ void SafetyLimiterNode::timerCallback()
   std_msgs::msg::Bool collision_margin_msg;
   collision_msg.data = false;
   collision_margin_msg.data = false;
+
+  if (has_cmd_vel_ && (now() - last_cmd_vel_time_).seconds() > cmd_vel_timeout_) {
+    latest_cmd_vel_ = std::make_shared<geometry_msgs::msg::Twist>();
+  }
 
   if (!has_footprint_ || !has_cloud_ || !has_cmd_vel_) {
     RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 3000,
