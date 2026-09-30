@@ -52,7 +52,7 @@ ODriveCANDriver::ODriveCANDriver(const rclcpp::NodeOptions & options)
     
     odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("odom", 10);
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
-    auto odom_timer = this->create_wall_timer(50ms, std::bind(&ODriveCANDriver::update_odometry, this));
+    odom_timer_ = this->create_wall_timer(50ms, std::bind(&ODriveCANDriver::update_odometry, this));
     
     // ODrive Info Initialization
     initialize_odrive(left_wheel_node_id_);
