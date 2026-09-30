@@ -31,7 +31,9 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
 # Vendored OpenMP NDT (koide3/ndt_omp). Do not edit include/pclomp or src/pclomp.
-add_library(pclomp SHARED
+# STATIC so ndt_omp_node resolves the PCL symbols itself: as a SHARED library the arm64 CI
+# build failed to link ndt_omp_node with undefined PCL references from libpclomp.so.
+add_library(pclomp STATIC
   src/pclomp/voxel_grid_covariance_omp.cpp
   src/pclomp/ndt_omp.cpp
 )
@@ -60,10 +62,6 @@ ament_target_dependencies(ndt_omp_node
   tf2_eigen
 )
 
-install(TARGETS pclomp
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-)
 install(TARGETS ndt_omp_node
   DESTINATION lib/${PROJECT_NAME}
 )
