@@ -2,42 +2,20 @@
 
 ## 運用方針
 
-**このリポジトリは基本的に Docker で動かす**（`compose.yaml` + GHCR イメージ、または `./scripts/build.sh docker`）。起動・実機確認・手順の説明は `docker compose pull` / `docker compose up` を前提にする。ローカル colcon はパッケージ開発時のビルド確認用。
-
-## ビルドスクリプト
-
-```bash
-# ローカル (colcon)
-./scripts/build.sh
-./scripts/build.sh local --packages-select autonomous_drive
-
-# Docker イメージ
-./scripts/build.sh docker
+**Docker での運用**
+```
+docker compose up -d
 ```
 
-## ローカル (colcon)
-
-```bash
-source /opt/ros/jazzy/setup.bash
-colcon build --symlink-install
-source install/setup.bash
-ros2 launch autonomous_drive autonomous_drive.launch.xml
-```
-
-## Docker（本番起動）
-
-Compose ファイルは `compose.yaml` を使用する（`docker-compose.yml` は使わない）。
-GHCR からイメージを pull して起動する（ローカルビルドなし）。
+## Docker
+Compose ファイルは `compose.yaml` を使用
 
 ```bash
 docker compose pull
 docker compose up
 ```
 
-Foxglove Studio で `ws://localhost:8765` に接続し、`/goal_pose` に目標位置を送る。
-
 ### rosbag 録画
-
 `compose.yaml` で **`./rosbag:/rosbag`** をマウントする。起動中の **同一コンテナ**（`docker ps` の NAMES、例: `siranui-shiranui-1`）で録画する（別 `docker run` だと点群などが bag に入らないことがある）。
 
 **1. マウント付きで起動**（`compose.yaml` があるディレクトリで。既に起動済みなら `--force-recreate` で作り直す）
@@ -52,7 +30,7 @@ mkdir -p rosbag && docker compose up -d --force-recreate
 docker exec -it siranui-shiranui-1 bash -c 'source /opt/ros/jazzy/setup.bash && source /ros2_ws/install/setup.bash && ros2 bag record -a -o /rosbag/$(date +%Y%m%d_%H%M%S) -s mcap'
 ```
 
-launch のオプション（foxglove / lidar_sim / safety_limiter 等）は `autonomous_drive.launch.xml` のデフォルト（true）を使用する。
+launch のオプション（foxglove / lidar_sim 等）は `autonomous_drive.launch.xml` のデフォルト（true）を使用する。
 
 ### ローカルでイメージをビルドする場合（開発・CI 用）
 

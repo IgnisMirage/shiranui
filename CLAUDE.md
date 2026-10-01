@@ -55,7 +55,7 @@ mkdir -p rosbag && docker compose up -d --force-recreate
 docker exec -it siranui-shiranui-1 bash -c 'source /opt/ros/jazzy/setup.bash && source /ros2_ws/install/setup.bash && ros2 bag record -a -o /rosbag/$(date +%Y%m%d_%H%M%S) -s mcap'
 ```
 
-launch のオプション（foxglove / lidar_sim / safety_limiter 等）は `autonomous_drive.launch.xml` のデフォルト（true）を使用する。
+launch のオプション（foxglove / lidar_sim 等）は `autonomous_drive.launch.xml` のデフォルト（true）を使用する。
 
 ### ローカルでイメージをビルドする場合（開発・CI 用）
 

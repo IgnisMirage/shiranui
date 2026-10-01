@@ -175,7 +175,7 @@
     <param name="resolution" value="$(var grid_resolution)"/>
   </node>
 
-  <!-- /goal_pose を受けて /path を出す。pointcloud モードは map_grid、occupancy_grid モードは map を使う -->
+  <!-- global planner -->
   <node pkg="a_star_planner" exec="a_star_component" name="a_star_planner_node"
         output="screen">
     <param from="$(find-pkg-share a_star_planner)/config/planner_params.yaml"/>
@@ -184,7 +184,7 @@
            value="$(eval '&quot;map_grid&quot; if &quot;$(var map_mode)&quot; == &quot;pointcloud&quot; else &quot;map&quot;')"/>
   </node>
 
-  <!-- ローカルプランナーは /path を追従して /auto_cmd_vel に出す -->
+  <!-- local planner -->
   <node pkg="pure_pursuit_planner" exec="pure_pursuit_planner_node" name="pure_pursuit_planner"
         output="screen" if="$(equals $(var planner) pure_pursuit)">
     <param from="$(find-pkg-share pure_pursuit_planner)/config/pure_pursuit_params.yaml"/>
