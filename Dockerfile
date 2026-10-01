@@ -39,8 +39,18 @@ FROM base AS build
 COPY . /ros2_ws
 WORKDIR /ros2_ws
 
+# TEMP: on failure, dump how ndt_omp_node is linked (arm64 CI cannot resolve PCL symbols there)
 RUN source /opt/ros/jazzy/setup.bash \
-  && colcon build \
+  && (colcon build || ( \
+       L=/usr/lib/$(gcc -dumpmachine); \
+       echo "=== DIAG link.txt"; cat build/ndt_omp/CMakeFiles/ndt_omp_node.dir/link.txt; \
+       echo "=== DIAG flags.make"; cat build/ndt_omp/CMakeFiles/ndt_omp_node.dir/flags.make; \
+       echo "=== DIAG libs"; ls -lL $L/libpcl_common.so* $L/libpcl_io.so*; file -L $L/libpcl_common.so; \
+       echo "=== DIAG console::print defined in libpcl_common:"; nm -D --defined-only $L/libpcl_common.so | grep -c _ZN3pcl7console5print; \
+       echo "=== DIAG undefined in ndt_omp_node.o:"; nm -u build/ndt_omp/CMakeFiles/ndt_omp_node.dir/src/ndt_omp_node.cpp.o | grep -c _ZN3pcl7console5print; \
+       echo "=== DIAG relink verbose"; cd build/ndt_omp && bash -c "$(cat CMakeFiles/ndt_omp_node.dir/link.txt) -Wl,--trace" 2>&1 | grep -iE "pcl_common|pcl_io|error" | head -20; \
+       echo "=== DIAG pkgs"; dpkg -l | grep -E "libpcl-(common|io)|binutils " ; \
+       exit 1)) \
   && rm -rf log build
 
 FROM base AS deploy
