@@ -24,6 +24,10 @@ find_package(tf2_eigen REQUIRED)
 find_package(PCL REQUIRED COMPONENTS common io filters search registration)
 find_package(OpenMP REQUIRED)
 
+# Instantiate the PCL templates (PCLBase, KdTreeFLANN, VoxelGrid, ...) in this package instead of
+# linking PCL's precompiled instances: the arm64 CI build could not resolve those instances.
+add_compile_definitions(PCL_NO_PRECOMPILE)
+
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/NdtStatus.msg"
   DEPENDENCIES std_msgs
@@ -31,8 +35,6 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
 # Vendored OpenMP NDT (koide3/ndt_omp). Do not edit include/pclomp or src/pclomp.
-# STATIC so ndt_omp_node resolves the PCL symbols itself: as a SHARED library the arm64 CI
-# build failed to link ndt_omp_node with undefined PCL references from libpclomp.so.
 add_library(pclomp STATIC
   src/pclomp/voxel_grid_covariance_omp.cpp
   src/pclomp/ndt_omp.cpp
