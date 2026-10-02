@@ -12,9 +12,6 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(nav_msgs REQUIRED)
-find_package(sensor_msgs REQUIRED)
-find_package(pcl_conversions REQUIRED)
-find_package(PCL REQUIRED COMPONENTS common io filters)
 find_package(yaml-cpp REQUIRED)
 find_package(PNG REQUIRED)
 
@@ -23,24 +20,6 @@ ament_target_dependencies(map_publisher_node rclcpp nav_msgs)
 target_link_libraries(map_publisher_node yaml-cpp PNG::PNG)
 
 install(TARGETS map_publisher_node
-  DESTINATION lib/${PROJECT_NAME}
-)
-
-add_executable(map_pointcloud_publisher_node src/map_pointcloud_publisher_node.cpp)
-target_include_directories(map_pointcloud_publisher_node PRIVATE ${PCL_INCLUDE_DIRS})
-ament_target_dependencies(map_pointcloud_publisher_node rclcpp sensor_msgs pcl_conversions)
-target_link_libraries(map_pointcloud_publisher_node ${PCL_LIBRARIES})
-
-install(TARGETS map_pointcloud_publisher_node
-  DESTINATION lib/${PROJECT_NAME}
-)
-
-add_executable(map_grid_publisher_node src/map_grid_publisher_node.cpp)
-target_include_directories(map_grid_publisher_node PRIVATE ${PCL_INCLUDE_DIRS})
-ament_target_dependencies(map_grid_publisher_node rclcpp nav_msgs)
-target_link_libraries(map_grid_publisher_node ${PCL_LIBRARIES})
-
-install(TARGETS map_grid_publisher_node
   DESTINATION lib/${PROJECT_NAME}
 )
 

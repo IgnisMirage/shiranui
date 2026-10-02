@@ -13,7 +13,7 @@
 
     # launch の map_pcd_path で上書きする
     globalmap_pcd: ''
-    view_downsample_resolution: 0.5
+    view_downsample_resolution: 0.2
 
     # ia-amr-ros は 0.5 m。siranui の map.pcd は疎（約 1.3 万点）なので、
     # 旧 ndt_localizer と同じ 2.0 m にしている

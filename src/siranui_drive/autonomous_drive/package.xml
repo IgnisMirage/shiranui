@@ -11,11 +11,8 @@
 
   <depend>rclcpp</depend>
   <depend>nav_msgs</depend>
-  <depend>sensor_msgs</depend>
-  <depend>pcl_conversions</depend>
   <build_depend>libyaml-cpp-dev</build_depend>
   <build_depend>libpng-dev</build_depend>
-  <build_depend>libpcl-all-dev</build_depend>
 
   <exec_depend>pure_pursuit_planner</exec_depend>
   <exec_depend>stanley_planner</exec_depend>

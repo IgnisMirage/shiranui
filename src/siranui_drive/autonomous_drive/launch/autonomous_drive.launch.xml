@@ -9,23 +9,11 @@
   <arg name="foxglove" default="true" description="Foxglove Bridge を起動するか (true/false)"/>
   <arg name="foxglove_port" default="8765" description="Foxglove Bridge の待ち受けポート"/>
 
-  <arg name="map" default="true" description="地図を配信するか (true/false)"/>
-  <arg name="map_mode" default="pointcloud"
-       description="地図の形式: occupancy_grid (2D) / pointcloud (3D localization 用 PCD スライス)">
-    <choice value="occupancy_grid"/>
-    <choice value="pointcloud"/>
-  </arg>
+  <arg name="map" default="true" description="/map (2D 占有格子) を配信するか (true/false)"/>
   <arg name="map_yaml" default="$(find-pkg-share autonomous_drive)/map/map.yaml"
-       description="2D 占有格子 (map_mode=occupancy_grid のとき)"/>
+       description="2D 占有格子 (map.pcd から scripts/pcd_to_map.py で生成)"/>
   <arg name="map_pcd_path" default="$(find-pkg-share autonomous_drive)/map/map.pcd"
-       description="3D 地図 PCD (map_mode=pointcloud および ndt_omp)"/>
-  <arg name="map_min_height" default="-10.0" description="map 点群: 地面 (z=0) からの高さ下限 [m]"/>
-  <arg name="map_max_height" default="100.0" description="map 点群: 高さ上限 [m]"/>
-  <arg name="map_crop_radius" default="0.0" description="map 点群: XY 半径 [m] (0=全範囲)"/>
-  <arg name="map_voxel_leaf_size" default="0.0" description="map 点群: ボクセルサイズ [m] (0=無効)"/>
-  <arg name="grid_resolution" default="0.05" description="A* 用 2D 格子 (map.pcd から生成): セルサイズ [m]"/>
-  <arg name="grid_min_height" default="0.1" description="A* 用 2D 格子: 障害物とみなす高さ下限 [m]（地面を除外）"/>
-  <arg name="grid_max_height" default="1.0" description="A* 用 2D 格子: 障害物とみなす高さ上限 [m]"/>
+       description="3D 地図 PCD (ndt_omp の位置推定用)"/>
 
   <arg name="can_interface" default="can0" description="CAN interface name"/>
   <arg name="left_wheel_node_id" default="1" description="Left wheel ODrive node ID"/>
@@ -146,33 +134,11 @@
   </node>
 
   <node pkg="autonomous_drive" exec="map_publisher_node" name="map_publisher" output="screen"
-        if="$(eval '&quot;$(var map)&quot; == &quot;true&quot; and &quot;$(var map_mode)&quot; == &quot;occupancy_grid&quot;')">
+        if="$(var map)">
     <param name="map_yaml" value="$(var map_yaml)"/>
     <param name="topic_name" value="map"/>
     <param name="frame_id" value="map"/>
     <param name="publish_rate" value="1.0"/>
-  </node>
-
-  <node pkg="autonomous_drive" exec="map_pointcloud_publisher_node" name="map_pointcloud_publisher"
-        output="screen"
-        if="$(eval '&quot;$(var map)&quot; == &quot;true&quot; and &quot;$(var map_mode)&quot; == &quot;pointcloud&quot;')">
-    <param from="$(find-pkg-share autonomous_drive)/config/map_pointcloud_params.yaml"/>
-    <param name="map_pcd_path" value="$(var map_pcd_path)"/>
-    <param name="min_height" value="$(var map_min_height)"/>
-    <param name="max_height" value="$(var map_max_height)"/>
-    <param name="crop_radius" value="$(var map_crop_radius)"/>
-    <param name="voxel_leaf_size" value="$(var map_voxel_leaf_size)"/>
-  </node>
-
-  <!-- A* のコストマップ: pointcloud モードでは map.pcd の高さスライスを 2D 格子にして map_grid に出す -->
-  <node pkg="autonomous_drive" exec="map_grid_publisher_node" name="map_grid_publisher"
-        output="screen"
-        if="$(equals $(var map_mode) pointcloud)">
-    <param name="map_pcd_path" value="$(var map_pcd_path)"/>
-    <param name="topic_name" value="map_grid"/>
-    <param name="min_height" value="$(var grid_min_height)"/>
-    <param name="max_height" value="$(var grid_max_height)"/>
-    <param name="resolution" value="$(var grid_resolution)"/>
   </node>
 
   <!-- global planner -->
@@ -180,8 +146,7 @@
         output="screen">
     <param from="$(find-pkg-share a_star_planner)/config/planner_params.yaml"/>
     <param name="use_sim_time" value="false"/>
-    <param name="map_topic"
-           value="$(eval '&quot;map_grid&quot; if &quot;$(var map_mode)&quot; == &quot;pointcloud&quot; else &quot;map&quot;')"/>
+    <param name="map_topic" value="map"/>
   </node>
 
   <!-- local planner -->
