@@ -44,8 +44,6 @@ private:
   std::vector<Point2D> transformFootprint(
     const geometry_msgs::msg::Pose & pose,
     const std::vector<Point2D> & local_footprint) const;
-  std::vector<Point2D> expandFootprint(
-    const std::vector<Point2D> & local_footprint, double margin) const;
 
   int firstCollisionIndex(
     const std::vector<geometry_msgs::msg::Pose> & predicted_poses,
@@ -53,15 +51,13 @@ private:
 
   void publishFutureMotionVisualization(
     const std::vector<geometry_msgs::msg::Pose> & predicted_poses,
-    bool collision, bool collision_margin) const;
+    bool collision) const;
   void publishCmdVel(double scale);
   void publishStop(bool fail_safe);
 
   static bool pointInPolygon(double x, double y, const std::vector<Point2D> & polygon);
-  static Point2D vertexCentroid(const std::vector<Point2D> & polygon);
 
   rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr collision_pub_;
-  rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr collision_margin_pub_;
   rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_;
   rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr future_motion_prediction_pub_;
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr future_motion_markers_pub_;
@@ -96,17 +92,14 @@ private:
   std::string future_motion_markers_topic_;
   std::string cloud_in_map_topic_;
   std::string collision_topic_;
-  std::string collision_margin_topic_;
   double publish_rate_;
   double prediction_time_;
   double cmd_vel_timeout_;
   double prediction_step_;
-  double footprint_margin_;
   double cloud_timeout_;
   bool fail_safe_stop_;
   double max_decel_;
   double stop_distance_;
-  double margin_min_speed_;
   double recovery_rate_;
   double speed_scale_ = 1.0;
   double footprint_radius_ = 0.0;

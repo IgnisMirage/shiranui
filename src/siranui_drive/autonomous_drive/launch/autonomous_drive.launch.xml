@@ -121,16 +121,16 @@
     <param name="max_angular_velocity" value="$(var joy_max_angular_velocity)"/>
   </node>
 
-  <!-- RB=manual / start=auto で /manual_cmd_vel と /auto_cmd_vel のどちらかを選んで /cmd_vel_in に出す。
-       safety_limiter が手動・自動どちらも軌道予測して /cmd_vel に流す -->
+  <!-- RB=manual / start=auto で /manual_cmd_vel と /auto_cmd_vel_safe のどちらかを選んで /cmd_vel に出す。
+       safety_limiter は自動走行の指令 (/auto_cmd_vel) だけに適用し、手動指令は制限しない -->
   <node pkg="drive_mode_switch" exec="drive_mode_switch_node" name="drive_mode_switch" output="screen">
-    <remap from="cmd_vel" to="cmd_vel_in"/>
+    <remap from="auto_cmd_vel" to="auto_cmd_vel_safe"/>
   </node>
 
   <node pkg="safety_limiter" exec="safety_limiter" name="safety_limiter" output="screen">
     <param from="$(find-pkg-share safety_limiter)/config/safety_limiter_params.yaml"/>
-    <param name="cmd_vel_in_topic" value="cmd_vel_in"/>
-    <param name="cmd_vel_out_topic" value="cmd_vel"/>
+    <param name="cmd_vel_in_topic" value="auto_cmd_vel"/>
+    <param name="cmd_vel_out_topic" value="auto_cmd_vel_safe"/>
   </node>
 
   <node pkg="autonomous_drive" exec="map_publisher_node" name="map_publisher" output="screen"

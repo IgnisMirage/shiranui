@@ -8,30 +8,26 @@
       prediction_time: 1.0
       prediction_step: 0.1
       cmd_vel_timeout: 0.5
-      footprint_margin: 0.15
       # 点群がこの秒数以上更新されなければ無効扱い
       cloud_timeout: 0.5
       # 点群/footprint/自己位置が得られない・古いとき停止する
       fail_safe_stop: true
       # 許容減速度 [m/s^2]。許容速度 = sqrt(2 * max_decel * 障害物までの距離)
       # prediction_time >= 最高速度 / max_decel を満たすこと
-      max_decel: 0.5
+      max_decel: 1.0
       # 実 footprint が障害物に触れる手前で止まる余裕距離 [m]
       stop_distance: 0.1
-      # margin 内に障害物がある間の最低速度 [m/s] (脱出用)
-      margin_min_speed: 0.1
       # 減速後の速度倍率の回復レート [1/s]
       recovery_rate: 1.0
       enable_visualization: true
       visualization_stride: 3
 
       # トピック名（launch の remap と合わせる）
-      cmd_vel_in_topic: "cmd_vel_in"
-      cmd_vel_out_topic: "cmd_vel"
+      cmd_vel_in_topic: "auto_cmd_vel"
+      cmd_vel_out_topic: "auto_cmd_vel_safe"
       cloud_topic: "cloud"
       footprint_topic: "footprint"
       future_motion_prediction_topic: "future_motion_prediction"
       future_motion_markers_topic: "future_motion_markers"
       cloud_in_map_topic: "cloud_in_map"
       collision_topic: "collision"
-      collision_margin_topic: "collision_margin"

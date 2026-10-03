@@ -25,7 +25,6 @@ SafetyLimiterNode::SafetyLimiterNode(const rclcpp::NodeOptions & options)
   // これより古い指令は停止 (0) とみなす。joy は押している間しか指令が来ず、
   // プランナーもゴール到達後は止まるため、最後の指令を出し続けないようにする
   cmd_vel_timeout_ = declare_parameter<double>("cmd_vel_timeout", 0.5);
-  footprint_margin_ = declare_parameter<double>("footprint_margin", 0.15);
   // これより古い点群は無効とみなす (LiDAR 停止時に古い点群で「衝突なし」と判定し続けない)
   cloud_timeout_ = declare_parameter<double>("cloud_timeout", 0.5);
   // true: 点群・footprint・自己位置のいずれかが得られない/古いとき停止する (fail-safe)
@@ -34,8 +33,6 @@ SafetyLimiterNode::SafetyLimiterNode(const rclcpp::NodeOptions & options)
   max_decel_ = std::max(declare_parameter<double>("max_decel", 0.5), 1e-3);
   // 実 footprint が障害物に触れる手前で止まるための余裕距離 [m]
   stop_distance_ = declare_parameter<double>("stop_distance", 0.1);
-  // margin 内に障害物がある間の最低速度 [m/s] (margin 内からの脱出用)
-  margin_min_speed_ = declare_parameter<double>("margin_min_speed", 0.1);
   // 減速後の速度倍率の回復レート [1/s] (減速は即時、復帰は徐々に)
   recovery_rate_ = declare_parameter<double>("recovery_rate", 1.0);
   enable_visualization_ = declare_parameter<bool>("enable_visualization", true);
@@ -51,8 +48,6 @@ SafetyLimiterNode::SafetyLimiterNode(const rclcpp::NodeOptions & options)
     "future_motion_markers_topic", "future_motion_markers");
   cloud_in_map_topic_ = declare_parameter<std::string>("cloud_in_map_topic", "cloud_in_map");
   collision_topic_ = declare_parameter<std::string>("collision_topic", "collision");
-  collision_margin_topic_ = declare_parameter<std::string>(
-    "collision_margin_topic", "collision_margin");
 
   latest_cmd_vel_ = std::make_shared<geometry_msgs::msg::Twist>();
 
@@ -64,8 +59,6 @@ SafetyLimiterNode::SafetyLimiterNode(const rclcpp::NodeOptions & options)
   const rclcpp::QoS footprint_qos = rclcpp::QoS(1).transient_local().reliable();
 
   collision_pub_ = create_publisher<std_msgs::msg::Bool>(collision_topic_, rclcpp::QoS(10));
-  collision_margin_pub_ = create_publisher<std_msgs::msg::Bool>(
-    collision_margin_topic_, rclcpp::QoS(10));
   cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>(cmd_vel_out_topic_, cmd_vel_qos);
   future_motion_prediction_pub_ = create_publisher<nav_msgs::msg::Path>(
     future_motion_prediction_topic_, rclcpp::QoS(10));
@@ -249,33 +242,6 @@ std::vector<SafetyLimiterNode::Point2D> SafetyLimiterNode::transformFootprint(
   return world_footprint;
 }
 
-std::vector<SafetyLimiterNode::Point2D> SafetyLimiterNode::expandFootprint(
-  const std::vector<Point2D> & local_footprint, double margin) const
-{
-  if (local_footprint.empty() || margin <= 0.0) {
-    return local_footprint;
-  }
-
-  const auto center = vertexCentroid(local_footprint);
-  const double cx = center.x;
-  const double cy = center.y;
-
-  std::vector<Point2D> expanded;
-  expanded.reserve(local_footprint.size());
-  for (const auto & point : local_footprint) {
-    const double dx = point.x - cx;
-    const double dy = point.y - cy;
-    const double dist = std::hypot(dx, dy);
-    if (dist < 1e-6) {
-      expanded.push_back(point);
-      continue;
-    }
-    const double scale = (dist + margin) / dist;
-    expanded.push_back({cx + dx * scale, cy + dy * scale});
-  }
-  return expanded;
-}
-
 bool SafetyLimiterNode::pointInPolygon(
   double x, double y, const std::vector<Point2D> & polygon)
 {
@@ -294,18 +260,6 @@ bool SafetyLimiterNode::pointInPolygon(
     }
   }
   return inside;
-}
-
-SafetyLimiterNode::Point2D SafetyLimiterNode::vertexCentroid(
-  const std::vector<Point2D> & polygon)
-{
-  Point2D sum{0.0, 0.0};
-  for (const auto & p : polygon) {
-    sum.x += p.x;
-    sum.y += p.y;
-  }
-  const double n = static_cast<double>(polygon.size());
-  return {sum.x / n, sum.y / n};
 }
 
 int SafetyLimiterNode::firstCollisionIndex(
@@ -329,7 +283,7 @@ int SafetyLimiterNode::firstCollisionIndex(
 
 void SafetyLimiterNode::publishFutureMotionVisualization(
   const std::vector<geometry_msgs::msg::Pose> & predicted_poses,
-  bool collision, bool collision_margin) const
+  bool collision) const
 {
   if (!enable_visualization_) {
     return;
@@ -349,12 +303,10 @@ void SafetyLimiterNode::publishFutureMotionVisualization(
   visualization_msgs::msg::MarkerArray markers;
   int marker_id = 0;
   const int stride = std::max(1, visualization_stride_);
-  const auto expanded_footprint = expandFootprint(footprint_local_, footprint_margin_);
 
   for (size_t i = 0; i < predicted_poses.size(); i += static_cast<size_t>(stride)) {
     const auto & pose = predicted_poses[i];
     const auto world_footprint = transformFootprint(pose, footprint_local_);
-    const auto world_margin = transformFootprint(pose, expanded_footprint);
 
     visualization_msgs::msg::Marker footprint_marker;
     footprint_marker.header.stamp = now();
@@ -386,30 +338,6 @@ void SafetyLimiterNode::publishFutureMotionVisualization(
     }
     markers.markers.push_back(footprint_marker);
 
-    visualization_msgs::msg::Marker margin_marker = footprint_marker;
-    margin_marker.ns = "footprint_margin";
-    margin_marker.id = marker_id++;
-    margin_marker.scale.x = 0.015;
-    margin_marker.color.r = 1.0f;
-    margin_marker.color.g = collision_margin ? 0.5f : 1.0f;
-    margin_marker.color.b = 0.0f;
-    margin_marker.color.a = 0.45f;
-    margin_marker.points.clear();
-    for (const auto & point : world_margin) {
-      geometry_msgs::msg::Point p;
-      p.x = point.x;
-      p.y = point.y;
-      p.z = pose.position.z;
-      margin_marker.points.push_back(p);
-    }
-    if (!world_margin.empty()) {
-      geometry_msgs::msg::Point p;
-      p.x = world_margin.front().x;
-      p.y = world_margin.front().y;
-      p.z = pose.position.z;
-      margin_marker.points.push_back(p);
-    }
-    markers.markers.push_back(margin_marker);
   }
 
   future_motion_markers_pub_->publish(markers);
@@ -430,11 +358,8 @@ void SafetyLimiterNode::publishCmdVel(double scale)
 void SafetyLimiterNode::publishStop(bool fail_safe)
 {
   std_msgs::msg::Bool collision_msg;
-  std_msgs::msg::Bool collision_margin_msg;
   collision_msg.data = false;
-  collision_margin_msg.data = false;
   collision_pub_->publish(collision_msg);
-  collision_margin_pub_->publish(collision_margin_msg);
   // fail_safe=true なら入力欠損として停止、false なら従来どおり素通し
   speed_scale_ = (fail_safe && fail_safe_stop_) ? 0.0 : 1.0;
   publishCmdVel(speed_scale_);
@@ -443,9 +368,7 @@ void SafetyLimiterNode::publishStop(bool fail_safe)
 void SafetyLimiterNode::timerCallback()
 {
   std_msgs::msg::Bool collision_msg;
-  std_msgs::msg::Bool collision_margin_msg;
   collision_msg.data = false;
-  collision_margin_msg.data = false;
 
   if (has_cmd_vel_ && (now() - last_cmd_vel_time_).seconds() > cmd_vel_timeout_) {
     latest_cmd_vel_ = std::make_shared<geometry_msgs::msg::Twist>();
@@ -476,10 +399,7 @@ void SafetyLimiterNode::timerCallback()
   predictTrajectory(current_pose, predicted_poses);
 
   const int collision_index = firstCollisionIndex(predicted_poses, footprint_local_);
-  const auto expanded_footprint = expandFootprint(footprint_local_, footprint_margin_);
-  const int margin_index = firstCollisionIndex(predicted_poses, expanded_footprint);
   const bool collision = collision_index >= 0;
-  const bool collision_margin = margin_index >= 0;
 
   // 並進速度と、外周が回転で動く速度 (omega * 外接半径) を合わせた代表速度 [m/s]
   const double speed = std::hypot(latest_cmd_vel_->linear.x, latest_cmd_vel_->linear.y) +
@@ -489,17 +409,9 @@ void SafetyLimiterNode::timerCallback()
   if (speed > 1e-3) {
     if (collision_index == 0) {
       target_scale = 0.0;
-    } else {
-      if (collision_index > 0) {
-        const double dist = speed * collision_index * prediction_step_ - stop_distance_;
-        target_scale = std::min(
-          target_scale, std::sqrt(2.0 * max_decel_ * std::max(dist, 0.0)) / speed);
-      }
-      if (margin_index >= 0) {
-        const double dist = speed * margin_index * prediction_step_;
-        const double allowed = std::max(std::sqrt(2.0 * max_decel_ * dist), margin_min_speed_);
-        target_scale = std::min(target_scale, allowed / speed);
-      }
+    } else if (collision_index > 0) {
+      const double dist = speed * collision_index * prediction_step_ - stop_distance_;
+      target_scale = std::sqrt(2.0 * max_decel_ * std::max(dist, 0.0)) / speed;
     }
     if (speed / max_decel_ > prediction_time_) {
       RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 5000,
@@ -515,20 +427,15 @@ void SafetyLimiterNode::timerCallback()
   }
 
   collision_msg.data = collision;
-  collision_margin_msg.data = collision_margin;
   collision_pub_->publish(collision_msg);
-  collision_margin_pub_->publish(collision_margin_msg);
 
-  publishFutureMotionVisualization(predicted_poses, collision, collision_margin);
+  publishFutureMotionVisualization(predicted_poses, collision);
   publishCmdVel(speed_scale_);
 
   if (collision) {
     RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 1000,
       "Collision predicted in %d steps (footprint): speed scale %.2f",
       collision_index, speed_scale_);
-  } else if (collision_margin) {
-    RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 1000,
-      "Obstacle in margin (%d steps): speed scale %.2f", margin_index, speed_scale_);
   }
 }
 
