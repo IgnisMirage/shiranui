@@ -47,18 +47,18 @@ private:
   std::vector<Point2D> expandFootprint(
     const std::vector<Point2D> & local_footprint, double margin) const;
 
-  bool checkFootprintCollision(
+  int firstCollisionIndex(
     const std::vector<geometry_msgs::msg::Pose> & predicted_poses,
     const std::vector<Point2D> & local_footprint) const;
 
   void publishFutureMotionVisualization(
     const std::vector<geometry_msgs::msg::Pose> & predicted_poses,
     bool collision, bool collision_margin) const;
-  void publishCmdVel(bool collision);
+  void publishCmdVel(double scale);
+  void publishStop(bool fail_safe);
 
   static bool pointInPolygon(double x, double y, const std::vector<Point2D> & polygon);
-  static double polygonCentroidX(const std::vector<Point2D> & polygon);
-  static double polygonCentroidY(const std::vector<Point2D> & polygon);
+  static Point2D vertexCentroid(const std::vector<Point2D> & polygon);
 
   rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr collision_pub_;
   rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr collision_margin_pub_;
@@ -77,6 +77,7 @@ private:
 
   geometry_msgs::msg::Twist::SharedPtr latest_cmd_vel_;
   rclcpp::Time last_cmd_vel_time_;
+  rclcpp::Time last_cloud_time_;
   sensor_msgs::msg::PointCloud2::SharedPtr latest_cloud_;
   std::vector<Point2D> footprint_local_;
   std::vector<Point2D> cloud_points_map_;
@@ -101,6 +102,14 @@ private:
   double cmd_vel_timeout_;
   double prediction_step_;
   double footprint_margin_;
+  double cloud_timeout_;
+  bool fail_safe_stop_;
+  double max_decel_;
+  double stop_distance_;
+  double margin_min_speed_;
+  double recovery_rate_;
+  double speed_scale_ = 1.0;
+  double footprint_radius_ = 0.0;
   bool enable_visualization_;
   int visualization_stride_;
 };

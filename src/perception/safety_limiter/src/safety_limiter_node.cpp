@@ -1,11 +1,11 @@
 #include "safety_limiter/safety_limiter_node.hpp"
 
-#include <tf2/LinearMath/Matrix3x3.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/utils.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include <tf2_sensor_msgs/tf2_sensor_msgs.hpp>
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
 
@@ -26,6 +26,18 @@ SafetyLimiterNode::SafetyLimiterNode(const rclcpp::NodeOptions & options)
   // プランナーもゴール到達後は止まるため、最後の指令を出し続けないようにする
   cmd_vel_timeout_ = declare_parameter<double>("cmd_vel_timeout", 0.5);
   footprint_margin_ = declare_parameter<double>("footprint_margin", 0.15);
+  // これより古い点群は無効とみなす (LiDAR 停止時に古い点群で「衝突なし」と判定し続けない)
+  cloud_timeout_ = declare_parameter<double>("cloud_timeout", 0.5);
+  // true: 点群・footprint・自己位置のいずれかが得られない/古いとき停止する (fail-safe)
+  fail_safe_stop_ = declare_parameter<bool>("fail_safe_stop", true);
+  // 許容減速度。障害物までの距離 d から許容速度 sqrt(2*a*d) を求めて減速する
+  max_decel_ = std::max(declare_parameter<double>("max_decel", 0.5), 1e-3);
+  // 実 footprint が障害物に触れる手前で止まるための余裕距離 [m]
+  stop_distance_ = declare_parameter<double>("stop_distance", 0.1);
+  // margin 内に障害物がある間の最低速度 [m/s] (margin 内からの脱出用)
+  margin_min_speed_ = declare_parameter<double>("margin_min_speed", 0.1);
+  // 減速後の速度倍率の回復レート [1/s] (減速は即時、復帰は徐々に)
+  recovery_rate_ = declare_parameter<double>("recovery_rate", 1.0);
   enable_visualization_ = declare_parameter<bool>("enable_visualization", true);
   visualization_stride_ = declare_parameter<int>("visualization_stride", 3);
 
@@ -104,13 +116,26 @@ void SafetyLimiterNode::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPt
 void SafetyLimiterNode::pointCloudCallback(const sensor_msgs::msg::PointCloud2::SharedPtr msg)
 {
   geometry_msgs::msg::TransformStamped transform;
-  try {
-    transform = tf_buffer_->lookupTransform(
-      map_frame_, msg->header.frame_id, tf2::TimePointZero);
-  } catch (const tf2::TransformException & ex) {
-    RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 2000,
-      "Could not transform cloud to %s: %s", map_frame_.c_str(), ex.what());
-    return;
+  const rclcpp::Time stamp(msg->header.stamp);
+  bool got_transform = false;
+  if (stamp.nanoseconds() != 0) {
+    // 点群の取得時刻の TF を使う (走行中の変換ずれを減らす)
+    try {
+      transform = tf_buffer_->lookupTransform(
+        map_frame_, msg->header.frame_id, stamp);
+      got_transform = true;
+    } catch (const tf2::TransformException &) {
+    }
+  }
+  if (!got_transform) {
+    try {
+      transform = tf_buffer_->lookupTransform(
+        map_frame_, msg->header.frame_id, tf2::TimePointZero);
+    } catch (const tf2::TransformException & ex) {
+      RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 2000,
+        "Could not transform cloud to %s: %s", map_frame_.c_str(), ex.what());
+      return;
+    }
   }
 
   sensor_msgs::msg::PointCloud2 transformed_cloud;
@@ -129,7 +154,8 @@ void SafetyLimiterNode::pointCloudCallback(const sensor_msgs::msg::PointCloud2::
     cloud_points_map_.push_back({*iter_x, *iter_y});
   }
 
-  has_cloud_ = !cloud_points_map_.empty();
+  has_cloud_ = true;
+  last_cloud_time_ = now();
   cloud_in_map_pub_->publish(transformed_cloud);
 
   RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 3000,
@@ -143,6 +169,10 @@ void SafetyLimiterNode::footprintCallback(
   footprint_local_.clear();
   for (const auto & point : msg->polygon.points) {
     footprint_local_.push_back({point.x, point.y});
+  }
+  footprint_radius_ = 0.0;
+  for (const auto & p : footprint_local_) {
+    footprint_radius_ = std::max(footprint_radius_, std::hypot(p.x, p.y));
   }
   has_footprint_ = !footprint_local_.empty();
 }
@@ -174,12 +204,7 @@ void SafetyLimiterNode::predictTrajectory(
     return;
   }
 
-  double roll = 0.0;
-  double pitch = 0.0;
-  double yaw = 0.0;
-  tf2::Matrix3x3(tf2::Quaternion(
-    start_pose.orientation.x, start_pose.orientation.y,
-    start_pose.orientation.z, start_pose.orientation.w)).getRPY(roll, pitch, yaw);
+  const double yaw = tf2::getYaw(start_pose.orientation);
 
   const double vx = latest_cmd_vel_->linear.x;
   const double vy = latest_cmd_vel_->linear.y;
@@ -188,7 +213,9 @@ void SafetyLimiterNode::predictTrajectory(
   geometry_msgs::msg::Pose predicted_pose = start_pose;
   double predicted_yaw = yaw;
 
-  for (double t = 0.0; t <= prediction_time_; t += prediction_step_) {
+  predicted_poses.push_back(start_pose);
+  const int steps = static_cast<int>(std::round(prediction_time_ / prediction_step_));
+  for (int i = 0; i < steps; ++i) {
     predicted_pose.position.x +=
       (vx * std::cos(predicted_yaw) - vy * std::sin(predicted_yaw)) * prediction_step_;
     predicted_pose.position.y +=
@@ -197,7 +224,7 @@ void SafetyLimiterNode::predictTrajectory(
     predicted_yaw += omega * prediction_step_;
 
     tf2::Quaternion q;
-    q.setRPY(roll, pitch, predicted_yaw);
+    q.setRPY(0.0, 0.0, predicted_yaw);
     predicted_pose.orientation = tf2::toMsg(q);
     predicted_poses.push_back(predicted_pose);
   }
@@ -229,8 +256,9 @@ std::vector<SafetyLimiterNode::Point2D> SafetyLimiterNode::expandFootprint(
     return local_footprint;
   }
 
-  const double cx = polygonCentroidX(local_footprint);
-  const double cy = polygonCentroidY(local_footprint);
+  const auto center = vertexCentroid(local_footprint);
+  const double cx = center.x;
+  const double cy = center.y;
 
   std::vector<Point2D> expanded;
   expanded.reserve(local_footprint.size());
@@ -260,7 +288,7 @@ bool SafetyLimiterNode::pointInPolygon(
     const auto & pi = polygon[i];
     const auto & pj = polygon[j];
     const bool intersect = ((pi.y > y) != (pj.y > y)) &&
-      (x < (pj.x - pi.x) * (y - pi.y) / (pj.y - pi.y + 1e-12) + pi.x);
+      (x < (pj.x - pi.x) * (y - pi.y) / (pj.y - pi.y) + pi.x);
     if (intersect) {
       inside = !inside;
     }
@@ -268,41 +296,35 @@ bool SafetyLimiterNode::pointInPolygon(
   return inside;
 }
 
-double SafetyLimiterNode::polygonCentroidX(const std::vector<Point2D> & polygon)
+SafetyLimiterNode::Point2D SafetyLimiterNode::vertexCentroid(
+  const std::vector<Point2D> & polygon)
 {
-  double sum = 0.0;
+  Point2D sum{0.0, 0.0};
   for (const auto & p : polygon) {
-    sum += p.x;
+    sum.x += p.x;
+    sum.y += p.y;
   }
-  return sum / static_cast<double>(polygon.size());
+  const double n = static_cast<double>(polygon.size());
+  return {sum.x / n, sum.y / n};
 }
 
-double SafetyLimiterNode::polygonCentroidY(const std::vector<Point2D> & polygon)
-{
-  double sum = 0.0;
-  for (const auto & p : polygon) {
-    sum += p.y;
-  }
-  return sum / static_cast<double>(polygon.size());
-}
-
-bool SafetyLimiterNode::checkFootprintCollision(
+int SafetyLimiterNode::firstCollisionIndex(
   const std::vector<geometry_msgs::msg::Pose> & predicted_poses,
   const std::vector<Point2D> & local_footprint) const
 {
   if (predicted_poses.empty() || local_footprint.empty() || cloud_points_map_.empty()) {
-    return false;
+    return -1;
   }
 
-  for (const auto & pose : predicted_poses) {
-    const auto world_footprint = transformFootprint(pose, local_footprint);
+  for (size_t i = 0; i < predicted_poses.size(); ++i) {
+    const auto world_footprint = transformFootprint(predicted_poses[i], local_footprint);
     for (const auto & cloud_point : cloud_points_map_) {
       if (pointInPolygon(cloud_point.x, cloud_point.y, world_footprint)) {
-        return true;
+        return static_cast<int>(i);
       }
     }
   }
-  return false;
+  return -1;
 }
 
 void SafetyLimiterNode::publishFutureMotionVisualization(
@@ -368,7 +390,7 @@ void SafetyLimiterNode::publishFutureMotionVisualization(
     margin_marker.ns = "footprint_margin";
     margin_marker.id = marker_id++;
     margin_marker.scale.x = 0.015;
-    margin_marker.color.r = collision_margin ? 1.0f : 1.0f;
+    margin_marker.color.r = 1.0f;
     margin_marker.color.g = collision_margin ? 0.5f : 1.0f;
     margin_marker.color.b = 0.0f;
     margin_marker.color.a = 0.45f;
@@ -393,14 +415,29 @@ void SafetyLimiterNode::publishFutureMotionVisualization(
   future_motion_markers_pub_->publish(markers);
 }
 
-void SafetyLimiterNode::publishCmdVel(bool collision)
+void SafetyLimiterNode::publishCmdVel(double scale)
 {
   geometry_msgs::msg::Twist cmd_vel;
-  if (collision || !has_cmd_vel_) {
-    cmd_vel_pub_->publish(cmd_vel);
-    return;
+  if (has_cmd_vel_ && scale > 0.0) {
+    cmd_vel = *latest_cmd_vel_;
+    cmd_vel.linear.x *= scale;
+    cmd_vel.linear.y *= scale;
+    cmd_vel.angular.z *= scale;
   }
-  cmd_vel_pub_->publish(*latest_cmd_vel_);
+  cmd_vel_pub_->publish(cmd_vel);
+}
+
+void SafetyLimiterNode::publishStop(bool fail_safe)
+{
+  std_msgs::msg::Bool collision_msg;
+  std_msgs::msg::Bool collision_margin_msg;
+  collision_msg.data = false;
+  collision_margin_msg.data = false;
+  collision_pub_->publish(collision_msg);
+  collision_margin_pub_->publish(collision_margin_msg);
+  // fail_safe=true なら入力欠損として停止、false なら従来どおり素通し
+  speed_scale_ = (fail_safe && fail_safe_stop_) ? 0.0 : 1.0;
+  publishCmdVel(speed_scale_);
 }
 
 void SafetyLimiterNode::timerCallback()
@@ -416,28 +453,66 @@ void SafetyLimiterNode::timerCallback()
 
   if (!has_footprint_ || !has_cloud_ || !has_cmd_vel_) {
     RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 3000,
-      "Waiting for inputs (footprint=%d, cloud=%d, cmd_vel=%d, cloud_points=%zu)",
-      has_footprint_, has_cloud_, has_cmd_vel_, cloud_points_map_.size());
-    collision_pub_->publish(collision_msg);
-    collision_margin_pub_->publish(collision_margin_msg);
-    publishCmdVel(false);
+      "Waiting for inputs (footprint=%d, cloud=%d, cmd_vel=%d): stopping=%d",
+      has_footprint_, has_cloud_, has_cmd_vel_, fail_safe_stop_);
+    publishStop(true);
+    return;
+  }
+
+  if ((now() - last_cloud_time_).seconds() > cloud_timeout_) {
+    RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 1000,
+      "Cloud is stale (> %.2fs): stopping=%d", cloud_timeout_, fail_safe_stop_);
+    publishStop(true);
     return;
   }
 
   geometry_msgs::msg::Pose current_pose;
   if (!getCurrentPose(current_pose)) {
-    collision_pub_->publish(collision_msg);
-    collision_margin_pub_->publish(collision_margin_msg);
-    publishCmdVel(false);
+    publishStop(true);
     return;
   }
 
   std::vector<geometry_msgs::msg::Pose> predicted_poses;
   predictTrajectory(current_pose, predicted_poses);
 
-  const bool collision = checkFootprintCollision(predicted_poses, footprint_local_);
+  const int collision_index = firstCollisionIndex(predicted_poses, footprint_local_);
   const auto expanded_footprint = expandFootprint(footprint_local_, footprint_margin_);
-  const bool collision_margin = checkFootprintCollision(predicted_poses, expanded_footprint);
+  const int margin_index = firstCollisionIndex(predicted_poses, expanded_footprint);
+  const bool collision = collision_index >= 0;
+  const bool collision_margin = margin_index >= 0;
+
+  // 並進速度と、外周が回転で動く速度 (omega * 外接半径) を合わせた代表速度 [m/s]
+  const double speed = std::hypot(latest_cmd_vel_->linear.x, latest_cmd_vel_->linear.y) +
+    std::fabs(latest_cmd_vel_->angular.z) * footprint_radius_;
+
+  double target_scale = 1.0;
+  if (speed > 1e-3) {
+    if (collision_index == 0) {
+      target_scale = 0.0;
+    } else {
+      if (collision_index > 0) {
+        const double dist = speed * collision_index * prediction_step_ - stop_distance_;
+        target_scale = std::min(
+          target_scale, std::sqrt(2.0 * max_decel_ * std::max(dist, 0.0)) / speed);
+      }
+      if (margin_index >= 0) {
+        const double dist = speed * margin_index * prediction_step_;
+        const double allowed = std::max(std::sqrt(2.0 * max_decel_ * dist), margin_min_speed_);
+        target_scale = std::min(target_scale, allowed / speed);
+      }
+    }
+    if (speed / max_decel_ > prediction_time_) {
+      RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 5000,
+        "prediction_time (%.2fs) is shorter than the stopping time (%.2fs)",
+        prediction_time_, speed / max_decel_);
+    }
+  }
+  target_scale = std::clamp(target_scale, 0.0, 1.0);
+  if (target_scale < speed_scale_) {
+    speed_scale_ = target_scale;
+  } else {
+    speed_scale_ = std::min(target_scale, speed_scale_ + recovery_rate_ / publish_rate_);
+  }
 
   collision_msg.data = collision;
   collision_margin_msg.data = collision_margin;
@@ -445,14 +520,15 @@ void SafetyLimiterNode::timerCallback()
   collision_margin_pub_->publish(collision_margin_msg);
 
   publishFutureMotionVisualization(predicted_poses, collision, collision_margin);
-  publishCmdVel(collision);
+  publishCmdVel(speed_scale_);
 
   if (collision) {
     RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 1000,
-      "Collision detected in predicted path (footprint)");
+      "Collision predicted in %d steps (footprint): speed scale %.2f",
+      collision_index, speed_scale_);
   } else if (collision_margin) {
     RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 1000,
-      "Collision detected in predicted path (expanded footprint)");
+      "Obstacle in margin (%d steps): speed scale %.2f", margin_index, speed_scale_);
   }
 }
 
