@@ -2,28 +2,29 @@
 #define PURE_PURSUIT_PLANNER__PURE_PURSUIT_PLANNER_COMPONENT_HPP_
 
 #include <rclcpp/rclcpp.hpp>
-#include <geometry_msgs/msg/pose_stamped.hpp>
-#include <geometry_msgs/msg/twist.hpp>
+#include <geometry_msgs/msg/pose.hpp>
 #include <geometry_msgs/msg/point.hpp>
-#include <std_msgs/msg/string.hpp>
+#include <geometry_msgs/msg/twist.hpp>
 #include <nav_msgs/msg/odometry.hpp>
 #include <nav_msgs/msg/path.hpp>
+#include <std_msgs/msg/bool.hpp>
+#include <std_msgs/msg/empty.hpp>
+#include <std_msgs/msg/float32.hpp>
+#include <std_msgs/msg/string.hpp>
+#include <tf2/utils.h>
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
-#include <tf2/utils.h>
 #include <visualization_msgs/msg/marker.hpp>
 #include <visualization_msgs/msg/marker_array.hpp>
-#include <nav_msgs/msg/occupancy_grid.hpp>
 
-#include <memory>
-#include <vector>
+#include <limits>
 #include <string>
-#include <algorithm>
-#include <cmath>
+#include <vector>
 
 namespace pure_pursuit_planner
 {
+// ia-amr-ros の pure_pursuit (PurePursuit + PathFollowerManager) を ROS 2 に移植したもの。
 class PurePursuitNode : public rclcpp::Node
 {
 public:
@@ -31,113 +32,191 @@ public:
   ~PurePursuitNode();
 
 private:
-  // ロボットの状態を表す列挙型
-  enum class RobotState {
-    STOP,           // 停止状態
-    START_ROTATE,   // 開始回転状態
-    FOLLOW,         // 通常のパス追従状態
-    GOAL_ROTATE,    // ゴールに向かって回転する状態
-    GOAL            // ゴール到達状態
+  enum class State {
+    WAIT_PATH,               // 経路未受信
+    ROTATE_AT_START,         // スタート時の位置合わせ
+    FOLLOW_PATH,             // 経路追従
+    ROTATE_AT_GOAL,          // ゴールXY到達後の角度合わせ
+    ARRIVED_GOAL,            // ゴール位置・姿勢一致
+    PATH_DEVIATION_WARNING,  // 経路逸脱（回復閾値以内で自動復帰）
   };
 
-  rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr twist_publisher_;
-  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr marker_publisher_;
-  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr mode_publisher_;
-  rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr path_subscriber_;
-  rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr costmap_sub_;
+  // --- ROS インターフェース ---
+  rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr path_sub_;
+  rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;
+  rclcpp::Subscription<std_msgs::msg::Float32>::SharedPtr speed_sub_;
+  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr brake_sub_;
+  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr slowdown_sub_;
+  rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr pause_sub_;
+  rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr resume_sub_;
+  rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_pub_;
+  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr mode_pub_;
+  rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr following_pub_;
+  rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr reached_pub_;
+  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr marker_pub_;
+  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr approach_zone_pub_;
   rclcpp::TimerBase::SharedPtr control_timer_;
 
   tf2_ros::Buffer tf_buffer_;
   tf2_ros::TransformListener tf_listener_;
 
-  // パラメータ
-  double lookahead_distance_;       // 注視点距離 [m]
-  double min_lookahead_distance_;   // 曲率計算用の注視点距離下限 [m]
-  double linear_velocity_;          // 巡航速度 [m/s]
-  double max_angular_velocity_;     // 最大角速度 [rad/s]
-  double goal_tolerance_;           // ゴール許容誤差 [m]
+  // --- パラメータ ---
   std::string robot_frame_id_;
   std::string map_frame_id_;
-  double rotation_threshold_;
-  double rotation_velocity_;
-  double max_velocity_;
+  double control_rate_;
+  double transition_wait_time_;
+  double goal_standstill_linear_thresh_;
+  double goal_standstill_angular_thresh_;
+  double goal_standstill_confirm_time_;
+  double goal_standstill_timeout_;
+  double odom_timeout_;
+  double start_tolerance_ang_;
+  double goal_tolerance_dist_;
+  double goal_rotation_only_distance_threshold_;
+  double goal_tolerance_ang_;
+  double turn_in_place_threshold_;
+  double align_angular_vel_;
+  double align_angular_acceleration_;
+  double align_slowdown_angle_;
+  double align_slowdown_angular_vel_;
+  double align_angular_deceleration_;
+  double acceleration_;
   double deceleration_;
-  double acceleration_;             // 曲率ベース速度制限用 [m/s^2]
-  double curvature_safety_factor_;  // 曲率速度制限の安全係数
-  double sensor_delay_;             // 制御用姿勢予測の遅延補償 [s]
-  double goal_approach_distance_;   // ゴール手前の低速区間 [m]
-  double goal_approach_speed_;      // ゴール手前の低速 [m/s]
-  double slow_speed_lookahead_threshold_;  // この速度以下で短注視点 [m/s]
-  double slow_speed_lookahead_distance_; // 低速時の固定注視点距離 [m]
-  double target_idx_;
-  size_t closest_idx_ = 0;
+  double max_angular_acceleration_;
+  double max_angular_deceleration_;
+  double slowdown_deceleration_;
+  double brake_deceleration_;
+  double brake_timeout_;
+  double cruise_speed_;
+  double min_cmd_linear_abs_;
+  double min_cmd_angular_abs_;
+  double max_angular_velocity_;
+  double start_approach_distance_;
+  double start_approach_speed_;
+  double goal_approach_distance_;
+  double goal_approach_speed_;
+  double post_stop_recovery_distance_;
+  double post_stop_recovery_speed_;
+  double curvature_safety_factor_;
+  double lookahead_distance_;
+  double min_lookahead_distance_;
+  double slow_speed_lookahead_threshold_;
+  double slow_speed_lookahead_distance_;
+  double path_deviation_threshold_;
+  double path_deviation_recovery_threshold_;
+  bool enable_path_deviation_check_;
+  double sensor_delay_;
+  bool publish_approach_zone_marker_;
 
-  double pre_speed_ = 0.0;
-  double last_omega_ = 0.0;
+  // --- 状態 ---
+  State state_ = State::WAIT_PATH;
+  nav_msgs::msg::Path current_path_;
+  std::vector<double> cumulative_arc_length_;
+  geometry_msgs::msg::Pose current_pose_;
+  bool pose_received_ = false;
+
+  bool rotate_at_start_complete_ = false;
+  bool rotate_at_goal_complete_ = false;
+  rclcpp::Time rotate_at_start_ready_time_{0, 0, RCL_ROS_TIME};
+  rclcpp::Time rotate_at_goal_ready_time_{0, 0, RCL_ROS_TIME};
+
+  // ゴール姿勢合わせ前の静止確認 (odom 実速度)
+  double measured_linear_speed_ = 0.0;
+  double measured_angular_speed_ = 0.0;
+  rclcpp::Time last_odom_time_{0, 0, RCL_ROS_TIME};
+  rclcpp::Time goal_standstill_since_{0, 0, RCL_ROS_TIME};
+  bool rotate_at_goal_standstill_confirmed_ = false;
+
+  // 外部入力
+  bool is_brake_active_ = false;
+  bool is_slowdown_ = false;
+  bool is_paused_ = false;
+  double external_speed_limit_ = std::numeric_limits<double>::max();
+  rclcpp::Time last_brake_msg_time_{0, 0, RCL_ROS_TIME};
+
+  // 停止後リカバリ
+  double post_stop_recovery_start_dist_ = -1.0;
+
+  // 旋回方向固定
+  int align_direction_sign_ = 0;
+  bool align_force_goal_flag_ = false;
+
+  // 直前の出力
+  double last_cmd_linear_x_ = 0.0;
+  double last_cmd_angular_z_ = 0.0;
+  rclcpp::Time last_cmd_time_{0, 0, RCL_ROS_TIME};
+
+  // --- PurePursuit 本体の状態 ---
   double effective_max_speed_ = 0.0;
   double decel_start_distance_ = 0.0;
   double total_path_length_ = 0.0;
-  std::vector<double> cumulative_arc_length_;
+  size_t last_closest_index_ = 0;
+  double pre_speed_ = 0.0;
+  double last_omega_ = 0.0;
+  double pp_lookahead_distance_ = 0.0;  // 現在の注視点距離（低速時に切り替わる）
+  double priority_speed_ = std::numeric_limits<double>::max();
 
-  // 内部状態変数
-  nav_msgs::msg::Path::SharedPtr current_path_; // 現在のパス
-  bool follow_path_;                            // パスを受け取ったかどうか
-  bool is_goal_reached_;                        // ゴールに到達したかどうか
-  RobotState current_state_;                    // 現在のロボット状態
-  geometry_msgs::msg::Point target_point_;      // 現在のターゲットポイント
-  
-  bool costmap_received_ = false;
-  nav_msgs::msg::OccupancyGrid costmap_;
+  // --- コールバック ---
+  void pathCallback(const nav_msgs::msg::Path::SharedPtr msg);
+  void odomCallback(const nav_msgs::msg::Odometry::SharedPtr msg);
+  void speedCallback(const std_msgs::msg::Float32::SharedPtr msg);
+  void brakeCallback(const std_msgs::msg::Bool::SharedPtr msg);
+  void slowdownCallback(const std_msgs::msg::Bool::SharedPtr msg);
+  void pauseCallback(const std_msgs::msg::Empty::SharedPtr msg);
+  void resumeCallback(const std_msgs::msg::Empty::SharedPtr msg);
 
-  
-  // コールバック関数
-  void onPathReceived(const nav_msgs::msg::Path::SharedPtr msg);
-  void CostmapCallback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
-  void ControlLoop();
-  // Pure Pursuit アルゴリズムの実装関数
-  bool findTargetPoint(const geometry_msgs::msg::Pose & control_pose);
-  void detect_velocity(const geometry_msgs::msg::Pose & control_pose);
-  double calc_dinstanse(size_t index, const geometry_msgs::msg::Point & query) const;
-  double getRemainingPathDistance(const geometry_msgs::msg::Pose & pose) const;
-  double getEffectiveLookaheadDistance() const;
-  void computeArcLength();
-  void updatePathSpeedProfile();
-  double computeDecelProfileSpeed(double decel_distance) const;
-  bool isGoalApproachEnabled() const;
-  geometry_msgs::msg::Pose computeControlPose() const;
-  double calculateAngularVelocity(const geometry_msgs::msg::Pose & target_point);
+  // --- 制御ループ ---
+  void controlLoop();
+  bool getCurrentPoseFromTF();
+  void updateStateOnPath();
+  void updateStateOnPose();
+  void publishStatusTopics();
+  static std::string stateToString(State s);
 
-  void updateState();
-  bool getCurrentPose();
-  geometry_msgs::msg::Pose current_pose_;
-  bool pose_valid_ = false;
-  void publishMarkers(const geometry_msgs::msg::Point & target_point);
-
-  bool isStartAngleReached();
-  bool isGoalAngleReached();
-  // 経路の最初のセグメント方向（pose[0]->pose[1]）の yaw
-  double getPathStartYaw();
-  double getGoalYaw();
-  void publishCmdVel(double linear_x, double angular_z);
-  void publishStopCmd();
+  // --- 判定 ---
+  bool isAtStandstill() const;
+  bool isNearStartYaw();
+  bool isNearGoalXY();
+  bool isNearGoalYaw();
   bool isValidPath(const nav_msgs::msg::Path & path) const;
 
+  // --- 旋回整合 ---
+  geometry_msgs::msg::Twist calcAlignCmd(double target_yaw, double tolerance, double angular_vel);
+  geometry_msgs::msg::Twist calcInitAlignCmd();
+  geometry_msgs::msg::Twist calcGoalAlignCmd();
 
-  std::string getCurrentMode();
+  // --- 経路追従 (PurePursuit) ---
+  void setPurePursuitPath();
+  geometry_msgs::msg::Twist calcPurePursuitCmd();
+  geometry_msgs::msg::Pose computePredictedPose() const;
+  geometry_msgs::msg::Point getLookaheadPointImpl(const geometry_msgs::msg::Pose & pose);
+  geometry_msgs::msg::Point getLookaheadPoint();
+  bool isGoalApproachEnabled() const;
+  double computeDecelProfileSpeed(double decel_distance) const;
+  double getRemainingPathDistanceImpl(const geometry_msgs::msg::Pose & pose) const;
+  double getRemainingPathDistance() const;
+  double calculatePathDeviationDistance() const;
+  void computeArcLength();
 
-  bool isGoalReached(
-    const geometry_msgs::msg::Pose & current_pose,
-    const geometry_msgs::msg::PoseStamped & goal_pose);
+  // --- 出力整形 ---
+  void startPostStopRecovery();
+  bool isPostStopRecoveryActive() const;
+  bool shouldEmergencyBrake() const;
+  geometry_msgs::msg::Twist applyAccelerationLimits(const geometry_msgs::msg::Twist & cmd);
+  double applyAngularAccelLimit(double desired_angular_vel, bool in_place_rotation = false);
+  void applyCmdVelMinimumMagnitude(geometry_msgs::msg::Twist & cmd, bool enforce_minimum = true);
+  void publishCmd(const geometry_msgs::msg::Twist & cmd);
+  double elapsedSince(const rclcpp::Time & t) const;
 
-  double calculateDistance(
-    const geometry_msgs::msg::Point & p1,
-    const geometry_msgs::msg::Point & p2);
+  // --- 角度 ---
+  double getCurrentYaw() const;
+  double getGoalYaw() const;
+  double getInitialTargetYaw();
 
-  bool colisionCheck();
-  bool isOnDetour_ = false;
-    
+  // --- 可視化 ---
+  void publishLookaheadMarker(const geometry_msgs::msg::Point & lookahead);
+  void publishApproachZoneMarkers();
 };
-} // namespace pure_pursuit_planner
+}  // namespace pure_pursuit_planner
 
 #endif  // PURE_PURSUIT_PLANNER__PURE_PURSUIT_PLANNER_COMPONENT_HPP_
-

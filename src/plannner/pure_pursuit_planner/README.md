@@ -1,3 +1,9 @@
+> **注記**: 制御ロジックは ia-amr-ros の `pure_pursuit`（PurePursuit + PathFollowerManager）を移植したもの（Stanley 切替は除く）。
+> 状態: WAIT_PATH / ROTATE_AT_START / FOLLOW_PATH / ROTATE_AT_GOAL / ARRIVED_GOAL / PATH_DEVIATION_WARNING。
+> 入力: `path`, `odom`, `/local_planner/speed`, `/speed_handler/brake`, `/speed_handler/slowdown`, `/pause`, `/resume`。
+> 出力: `/auto_cmd_vel`, `~/mode`, `~/following`, `~/goal_reached`, `~/marker`, `~/approach_zone_marker`。
+> パラメータは `config/pure_pursuit_params.yaml` を参照（以下の旧版の表は古い）。
+
 <p style="display: inline">
   <!-- Programming Language -->
   <img src="https://img.shields.io/badge/-C++-00599C.svg?logo=c%2B%2B&style=for-the-badge">

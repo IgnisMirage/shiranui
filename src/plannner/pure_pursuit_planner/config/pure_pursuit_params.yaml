@@ -1,21 +1,68 @@
 /**:
   pure_pursuit_planner:
     ros__parameters:
-      lookahead_distance: 0.8
-      min_lookahead_distance: 0.3
-      linear_velocity: 0.8
-      max_angular_velocity: 1.0
-      goal_tolerance: 0.03
-      rotation_threshold: 0.03
-      rotation_velocity: 0.5
-      deceleration: 0.5
-      acceleration: 0.2
-      curvature_safety_factor: 0.6
-      max_velocity: 1.0
-      sensor_delay: 0.01
-      goal_approach_distance: 0.0
-      goal_approach_speed: 0.05
-      slow_speed_lookahead_threshold: 0.1
-      slow_speed_lookahead_distance: 0.35
       robot_frame_id: "base_link"
       map_frame_id: "map"
+      control_rate: 20.0
+
+      # --- 状態遷移 ---
+      transition_wait_time: 0.2        # 旋回開始・完了待ち [s]
+      goal_standstill_linear_thresh: 0.01   # ゴール旋回前に静止とみなす線速度 [m/s]
+      goal_standstill_angular_thresh: 0.05  # 同 角速度 [rad/s]
+      goal_standstill_confirm_time: 0.1     # 静止確認の継続時間 [s]
+      goal_standstill_timeout: 2.0          # 静止確認できない場合に旋回を始めるまで [s]
+      odom_timeout: 0.5                     # odom が新鮮とみなす上限 [s]
+
+      # --- 許容値 ---
+      goal_tolerance_dist: 0.03        # ゴールXY到達距離 [m]
+      goal_tolerance_ang: 0.03         # ゴール角度到達 [rad]
+      start_tolerance_ang: 0.03        # スタート時の角度整合 [rad]
+      goal_rotation_only_distance_threshold: 0.2  # この距離未満の経路は最後の旋回のみ [m]
+      turn_in_place_threshold: 0.2     # この距離未満の2点パスは旋回とみなす [m]
+
+      # --- 速度 ---
+      cruise_speed: 0.8                # 巡航速度 [m/s]
+      max_angular_velocity: 1.0        # 経路追従時の最大角速度 [rad/s]
+      min_cmd_linear_abs: 0.02         # 直進 |linear.x| の最小 [m/s]
+      min_cmd_angular_abs: 0.01        # その場旋回 |angular.z| の最小 [rad/s]
+
+      # --- 加減速 ---
+      acceleration: 0.2                # [m/s^2]（曲率ベース速度制限にも使用）
+      deceleration: 0.5                # [m/s^2]
+      max_angular_acceleration: 0.5    # [rad/s^2]
+      max_angular_deceleration: 0.5    # [rad/s^2]
+      slowdown_deceleration: 0.15      # slowdown 信号時 [m/s^2]
+      brake_deceleration: 0.5          # brake 信号時 [m/s^2]
+      brake_timeout: 0.2               # brake ハートビート途絶で即停止するまで [s]
+
+      # --- 旋回整合 ---
+      align_angular_vel: 0.5           # その場旋回の最大角速度 [rad/s]
+      align_angular_acceleration: 1.0  # その場旋回の角加速度 [rad/s^2]
+      align_slowdown_angle: 0.2        # この角度以内で低速旋回 [rad]
+      align_slowdown_angular_vel: 0.08 # 低速旋回の角速度 [rad/s]
+      align_angular_deceleration: 0.4  # 旋回の角減速度 [rad/s^2]
+
+      # --- スタート/ゴールアプローチ ---
+      start_approach_distance: 0.0     # パス開始からの低速区間 [m]（0で無効）
+      start_approach_speed: 0.3        # [m/s]
+      goal_approach_distance: 0.0      # ゴール手前の低速張り付き区間 [m]（0で無効）
+      goal_approach_speed: 0.05        # [m/s]
+
+      # --- 停止後リカバリ（ブレーキ解除・逸脱復帰） ---
+      post_stop_recovery_distance: 0.3 # [m]
+      post_stop_recovery_speed: 0.3    # [m/s]
+
+      # --- Pure Pursuit ---
+      lookahead_distance: 0.8
+      min_lookahead_distance: 0.3      # 曲率計算用の下限 [m]
+      curvature_safety_factor: 0.6
+      slow_speed_lookahead_threshold: 0.1   # /local_planner/speed がこれ以下で短注視点（0で無効）
+      slow_speed_lookahead_distance: 0.35
+      sensor_delay: 0.01               # 姿勢予測の遅延補償 [s]
+
+      # --- 経路逸脱 ---
+      enable_path_deviation_check: true
+      path_deviation_threshold: 2.0           # 逸脱とみなす距離 [m]
+      path_deviation_recovery_threshold: 0.8  # 復帰とみなす距離 [m]
+
+      publish_approach_zone_marker: false
