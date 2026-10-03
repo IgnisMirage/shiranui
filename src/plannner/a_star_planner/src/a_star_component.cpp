@@ -122,9 +122,9 @@ void AStarGlobalPlanner::callback_goal_pose(const geometry_msgs::msg::PoseStampe
     RCLCPP_INFO(get_logger(), "Path published (%zu nodes)", path.size());
   } else {
     RCLCPP_WARN(get_logger(),
-      "Failed to plan path from (%.2f, %.2f) to (%.2f, %.2f). "
-      "Check goal is reachable and not inside obstacles.",
-      start.position.x, start.position.y, goal.position.x, goal.position.y);
+      "Failed to plan path from (%.2f, %.2f) to (%.2f, %.2f): %s",
+      start.position.x, start.position.y, goal.position.x, goal.position.y,
+      planner_->error().c_str());
   }
 }
 
@@ -230,11 +230,8 @@ bool AStarGlobalPlanner::plan(
   planner_->convert_map_to_grid(start.position.x, start.position.y, start_x, start_y);
   planner_->convert_map_to_grid(goal.position.x, goal.position.y, goal_x, goal_y);
 
-  Node2D * start_node = new Node2D(start_x, start_y, 0.0, NULL);
-  start_node->set_grid_index(planner_->get_grid_index(start_x, start_y));
-
-  Node2D * goal_node = new Node2D(goal_x, goal_y, 0.0, NULL);
-  goal_node->set_grid_index(planner_->get_grid_index(goal_x, goal_y));
+  const Node2D start_node(start_x, start_y);
+  const Node2D goal_node(goal_x, goal_y);
 
   return planner_->plan(start_node, goal_node, path);
 }

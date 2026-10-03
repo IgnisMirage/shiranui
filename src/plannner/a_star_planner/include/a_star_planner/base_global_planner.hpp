@@ -1,6 +1,7 @@
 #ifndef NAVYU_PLANNER__BASE_GLOBAL_PLANNER_HPP_
 #define NAVYU_PLANNER__BASE_GLOBAL_PLANNER_HPP_
 
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <vector>
@@ -52,14 +53,19 @@ public:
 
   void convert_map_to_grid(double map_x, double map_y, int & grid_x, int & grid_y)
   {
-    grid_x = static_cast<int>((map_x - origin_x_) / resolution_);
-    grid_y = static_cast<int>((map_y - origin_y_) / resolution_);
+    // 負の座標でも 0 方向に丸めないよう floor を使う。極端な値は int に収まるよう飽和させる
+    constexpr double kLimit = 1e9;
+    grid_x = static_cast<int>(
+      std::clamp(std::floor((map_x - origin_x_) / resolution_), -kLimit, kLimit));
+    grid_y = static_cast<int>(
+      std::clamp(std::floor((map_y - origin_y_) / resolution_), -kLimit, kLimit));
   }
 
   void convert_grid_to_map(int grid_x, int grid_y, double & map_x, double & map_y)
   {
-    map_x = origin_x_ + grid_x * resolution_;
-    map_y = origin_y_ + grid_y * resolution_;
+    // セルの中心座標を返す
+    map_x = origin_x_ + (grid_x + 0.5) * resolution_;
+    map_y = origin_y_ + (grid_y + 0.5) * resolution_;
   }
 
 protected:
