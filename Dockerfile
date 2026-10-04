@@ -36,7 +36,7 @@ RUN pip3 install --break-system-packages --no-cache-dir \
 SHELL ["/bin/bash", "-c"]
 
 FROM base AS build
-COPY . /ros2_ws
+COPY src /ros2_ws/src
 WORKDIR /ros2_ws
 
 RUN source /opt/ros/jazzy/setup.bash \
@@ -50,6 +50,15 @@ COPY --from=build /ros2_ws/install /ros2_ws/install
 WORKDIR /ros2_ws
 ENTRYPOINT ["/bin/bash", "-c", "source /opt/ros/jazzy/setup.bash && [ -f /ros2_ws/install/setup.bash ] && source /ros2_ws/install/setup.bash; exec \"$0\" \"$@\""]
 CMD ["ros2", "launch", "autonomous_drive", "autonomous_drive.launch.xml"]
+
+FROM ros:jazzy-ros-base AS mqttsn-bridge
+
+WORKDIR /app
+COPY mqttsn_bridge/mqttsn_bridge /app/mqttsn_bridge
+
+ENV FASTDDS_BUILTIN_TRANSPORTS=UDPv4
+ENV MQTTSN_PORT=1884
+CMD ["python3", "-m", "mqttsn_bridge"]
 
 FROM base AS devenv
 

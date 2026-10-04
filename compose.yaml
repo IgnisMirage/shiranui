@@ -20,3 +20,17 @@ services:
       - /dev/input:/dev/input
       - ./rosbag:/rosbag
       - ./map/map.pcd:/ros2_ws/install/autonomous_drive/share/autonomous_drive/map/map.pcd:ro
+
+  # MQTT-SN (UDP) で受けた goal / path / pause / resume を ROS に流す。
+  # 既定では起動しない: docker compose --profile mqttsn up -d
+  mqttsn_bridge:
+    image: ghcr.io/ignismirage/shiranui-mqttsn-bridge:latest
+    pull_policy: always
+    network_mode: host
+    profiles: ["mqttsn"]
+    environment:
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+      - RMW_IMPLEMENTATION=${RMW_IMPLEMENTATION:-rmw_fastrtps_cpp}
+      - MQTTSN_PORT=${MQTTSN_PORT:-1884}
+      - MQTTSN_BIND=${MQTTSN_BIND:-0.0.0.0}
+      - MQTTSN_TOKEN=${MQTTSN_TOKEN:-}

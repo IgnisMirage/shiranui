@@ -57,6 +57,15 @@ docker exec -it siranui-shiranui-1 bash -c 'source /opt/ros/jazzy/setup.bash && 
 
 launch のオプション（foxglove / lidar_sim 等）は `autonomous_drive.launch.xml` のデフォルト（true）を使用する。
 
+### MQTT-SN ブリッジ（外部から path / pause / resume を流す）
+
+ROS とは別コンテナ。実装・使い方は `mqttsn_bridge/README.md`。既定では起動しない。
+
+```bash
+echo 'MQTTSN_TOKEN=好きな文字列' >> .env
+docker compose --profile mqttsn up -d
+```
+
 ### ローカルでイメージをビルドする場合（開発・CI 用）
 
 ```bash
