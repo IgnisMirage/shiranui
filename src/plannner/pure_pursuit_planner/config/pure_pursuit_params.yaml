@@ -36,9 +36,9 @@
       brake_timeout: 0.2               # brake ハートビート途絶で即停止するまで [s]
 
       # --- 旋回整合 ---
-      align_angular_vel: 0.5           # その場旋回の最大角速度 [rad/s]
+      align_angular_vel: 0.8           # その場旋回の最大角速度 [rad/s]
       align_angular_acceleration: 1.0  # その場旋回の角加速度 [rad/s^2]
-      align_slowdown_angle: 0.2        # この角度以内で低速旋回 [rad]
+      align_slowdown_angle: 0.15       # この角度以内で低速旋回 [rad]
       align_slowdown_angular_vel: 0.08 # 低速旋回の角速度 [rad/s]
       align_angular_deceleration: 0.4  # 旋回の角減速度 [rad/s^2]
 
